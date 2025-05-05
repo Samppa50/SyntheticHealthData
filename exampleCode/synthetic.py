@@ -6,7 +6,7 @@ from tensorflow.keras.optimizers import Adam
 from sklearn.preprocessing import MinMaxScaler
 
 # Load and preprocess the data
-data = pd.read_csv('diabetes.csv')
+data = pd.read_csv('../exampleData/diabetes.csv')
 scaler = MinMaxScaler()
 data_scaled = scaler.fit_transform(data)
 
