@@ -1,22 +1,24 @@
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request, redirect
 from werkzeug.utils import secure_filename
+import sythetic
+from synthetic import *
 
 app = Flask(__name__)
 
 
 @app.route("/")
-
 def index():
     return render_template("index.html")
 
 @app.route("/upload", methods=["POST"])
 def upload_file():
-    if request.method == "POST":
-        file = request.files['file']
+    file = request.files['file']
+    if file:
         file.save(f'uploads/{secure_filename(file.filename)}')
-        return "File uploaded successfully"
+        file.filename
+        return redirect('/')
     else:
-        return "File upload failed"
+        return print("No file uploaded")
 
 
 app.run(debug=True)

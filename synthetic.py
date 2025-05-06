@@ -6,7 +6,7 @@ from tensorflow.keras.optimizers import Adam
 from sklearn.preprocessing import MinMaxScaler
 
 # Load and preprocess the data
-data = pd.read_csv('../exampleData/diabetes.csv')
+data = pd.read_csv('./exampleData/diabetes.csv')
 columns_to_fix = ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI']
 data[columns_to_fix] = data[columns_to_fix].replace(0, np.nan)
 data = data.dropna(subset=columns_to_fix)
