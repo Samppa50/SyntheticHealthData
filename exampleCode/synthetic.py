@@ -10,6 +10,11 @@ data = pd.read_csv('../exampleData/diabetes.csv')
 scaler = MinMaxScaler()
 data_scaled = scaler.fit_transform(data)
 
+columns_to_fix = ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI']
+data[columns_to_fix] = data[columns_to_fix].replace(0, np.nan)
+data = data.dropna(subset=columns_to_fix)
+
+
 # Define the generator
 def build_generator(latent_dim, output_dim):
     model = Sequential([
@@ -81,7 +86,7 @@ for epoch in range(epochs):
         print(f"{epoch} [D loss: {d_loss[0]}, acc.: {100 * d_loss[1]}%] [G loss: {g_loss}]")
 
 # Generate synthetic data
-noise = np.random.normal(0, 1, (1000, latent_dim))
+noise = np.random.normal(0, 1, (768, latent_dim))
 synthetic_data = generator.predict(noise)
 synthetic_data = scaler.inverse_transform(synthetic_data)
 
@@ -98,19 +103,10 @@ synthetic_data[:, age_index] = np.clip(synthetic_data[:, age_index], 0, 70)  # L
 pregnancies_index = data.columns.get_loc('Pregnancies')
 synthetic_data[:, pregnancies_index] = np.clip(synthetic_data[:, pregnancies_index], 0, 10)  # Limit pregnancies to 10
 
+
 # Save synthetic data
 synthetic_df = pd.DataFrame(synthetic_data, columns=data.columns)
 synthetic_df.to_csv('synthetic_diabetes_data.csv', index=False)
-noise = np.random.normal(0, 1, (768, latent_dim))
-synthetic_data = generator.predict(noise)
-synthetic_data = scaler.inverse_transform(synthetic_data)
-
-# Clip negative values for specific columns
-columns_to_clip = ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin']
-for col in columns_to_clip:
-    col_index = data.columns.get_loc(col)
-    synthetic_data[:, col_index] = np.clip(synthetic_data[:, col_index], 0, None)
-
 
 
 # Save synthetic data
@@ -119,6 +115,14 @@ synthetic_df = pd.DataFrame(synthetic_data, columns=data.columns)
 # 'Pregnancies' and 'Outcome' as int
 synthetic_df['Pregnancies'] = synthetic_df['Pregnancies'].round().astype(int)
 synthetic_df['Outcome'] = synthetic_df['Outcome'].round().astype(int)
-synthetic_df.to_csv('synthetic_diabetes_data.csv', index=False)
+synthetic_df['Glucose'] = synthetic_df['Glucose'].round().astype(int)
+synthetic_df['BloodPressure'] = synthetic_df['BloodPressure'].round().astype(int)
+synthetic_df['SkinThickness'] = synthetic_df['SkinThickness'].round().astype(int)
+synthetic_df['Insulin'] = synthetic_df['Insulin'].round().astype(int)
+synthetic_df['BMI'] = synthetic_df['BMI'].round(1)
+synthetic_df['Age'] = synthetic_df['Age'].round().astype(int)
+synthetic_df['DiabetesPedigreeFunction'] = synthetic_df['DiabetesPedigreeFunction'].round(3)
 
-#testi2
+
+
+synthetic_df.to_csv('synthetic_diabetes_data.csv', index=False)
