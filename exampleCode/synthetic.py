@@ -120,3 +120,5 @@ synthetic_df = pd.DataFrame(synthetic_data, columns=data.columns)
 synthetic_df['Pregnancies'] = synthetic_df['Pregnancies'].round().astype(int)
 synthetic_df['Outcome'] = synthetic_df['Outcome'].round().astype(int)
 synthetic_df.to_csv('synthetic_diabetes_data.csv', index=False)
+
+#testi2
