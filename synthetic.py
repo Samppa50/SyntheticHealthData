@@ -6,18 +6,21 @@ from tensorflow.keras.optimizers import Adam
 from sklearn.preprocessing import MinMaxScaler
 
 # Load and preprocess the data
-data = pd.read_csv('../exampleData/diabetes.csv')
+
+data = pd.read_csv('./exampleData/diabetes.csv')
 columns_to_fix = ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI']
 data[columns_to_fix] = data[columns_to_fix].replace(0, np.nan)
 data = data.dropna(subset=columns_to_fix)
 scaler = MinMaxScaler()
 data_scaled = scaler.fit_transform(data)
 
+
 # Hyperparameters
 latent_dim = 10
 data_dim = data_scaled.shape[1]
 epochs = 100
 batch_size = 64
+
 
 # Define the generator
 def build_generator(latent_dim, output_dim):
@@ -51,6 +54,7 @@ def build_gan(generator, discriminator):
     gan_output = discriminator(generated_data)
     gan = Model(gan_input, gan_output)
     return gan
+
 
 def main():
     # Build and compile models
@@ -128,3 +132,4 @@ def main():
     
 if __name__ == '__main__':
     main()
+
