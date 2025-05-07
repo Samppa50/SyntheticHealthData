@@ -6,21 +6,18 @@ from tensorflow.keras.optimizers import Adam
 from sklearn.preprocessing import MinMaxScaler
 
 # Load and preprocess the data
-
-data = pd.read_csv('./exampleData/diabetes.csv')
+data = pd.read_csv('./uploads/diabetes.csv')
 columns_to_fix = ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI']
 data[columns_to_fix] = data[columns_to_fix].replace(0, np.nan)
 data = data.dropna(subset=columns_to_fix)
 scaler = MinMaxScaler()
 data_scaled = scaler.fit_transform(data)
 
-
 # Hyperparameters
 latent_dim = 10
 data_dim = data_scaled.shape[1]
 epochs = 100
 batch_size = 64
-
 
 # Define the generator
 def build_generator(latent_dim, output_dim):
@@ -56,80 +53,73 @@ def build_gan(generator, discriminator):
     return gan
 
 
-def main():
-    # Build and compile models
-    generator = build_generator(latent_dim, data_dim)
-    discriminator = build_discriminator(data_dim)
-    discriminator.compile(optimizer=Adam(0.0002, 0.5), loss='binary_crossentropy', metrics=['accuracy'])
+# Build and compile models
+generator = build_generator(latent_dim, data_dim)
+discriminator = build_discriminator(data_dim)
+discriminator.compile(optimizer=Adam(0.0002, 0.5), loss='binary_crossentropy', metrics=['accuracy'])
 
-    gan = build_gan(generator, discriminator)
-    gan.compile(optimizer=Adam(0.0002, 0.5), loss='binary_crossentropy')
+gan = build_gan(generator, discriminator)
+gan.compile(optimizer=Adam(0.0002, 0.5), loss='binary_crossentropy')
 
-    # Training the GAN
-    real = np.ones((batch_size, 1))
-    fake = np.zeros((batch_size, 1))
+# Training the GAN
+real = np.ones((batch_size, 1))
+fake = np.zeros((batch_size, 1))
 
-    for epoch in range(epochs):
-        # Train discriminator
-        idx = np.random.randint(0, data_scaled.shape[0], batch_size)
-        real_data = data_scaled[idx]
-        noise = np.random.normal(0, 1, (batch_size, latent_dim))
-        generated_data = generator.predict(noise)
+for epoch in range(epochs):
+    # Train discriminator
+    idx = np.random.randint(0, data_scaled.shape[0], batch_size)
+    real_data = data_scaled[idx]
+    noise = np.random.normal(0, 1, (batch_size, latent_dim))
+    generated_data = generator.predict(noise)
 
-        d_loss_real = discriminator.train_on_batch(real_data, real)
-        d_loss_fake = discriminator.train_on_batch(generated_data, fake)
-        d_loss = 0.5 * np.add(d_loss_real, d_loss_fake)
+    d_loss_real = discriminator.train_on_batch(real_data, real)
+    d_loss_fake = discriminator.train_on_batch(generated_data, fake)
+    d_loss = 0.5 * np.add(d_loss_real, d_loss_fake)
 
-        # Train generator
-        noise = np.random.normal(0, 1, (batch_size, latent_dim))
-        g_loss = gan.train_on_batch(noise, real)
+    # Train generator
+    noise = np.random.normal(0, 1, (batch_size, latent_dim))
+    g_loss = gan.train_on_batch(noise, real)
 
-        # Print progress
-        if epoch % 1000 == 0:
-            print(f"{epoch} [D loss: {d_loss[0]}, acc.: {100 * d_loss[1]}%] [G loss: {g_loss}]")
+    # Print progress
+    if epoch % 1000 == 0:
+        print(f"{epoch} [D loss: {d_loss[0]}, acc.: {100 * d_loss[1]}%] [G loss: {g_loss}]")
 
-    # Generate synthetic data
-    noise = np.random.normal(0, 1, (768, latent_dim))
-    synthetic_data = generator.predict(noise)
-    synthetic_data = scaler.inverse_transform(synthetic_data)
+# Generate synthetic data
+noise = np.random.normal(0, 1, (768, latent_dim))
+synthetic_data = generator.predict(noise)
+synthetic_data = scaler.inverse_transform(synthetic_data)
 
-    # Clip negative values for specific columns
-    columns_to_clip = ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'Age', 'Pregnancies']
-    for col in columns_to_clip:
-        col_index = data.columns.get_loc(col)
-        synthetic_data[:, col_index] = np.clip(synthetic_data[:, col_index], 0, None)
+# Clip negative values for specific columns
+columns_to_clip = ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'Age', 'Pregnancies']
+for col in columns_to_clip:
+    col_index = data.columns.get_loc(col)
+synthetic_data[:, col_index] = np.clip(synthetic_data[:, col_index], 0, None)
 
-    # Apply additional constraints
-    age_index = data.columns.get_loc('Age')
-    synthetic_data[:, age_index] = np.clip(synthetic_data[:, age_index], 0, 70)  # Limit age to 70 years
+# Apply additional constraints
+age_index = data.columns.get_loc('Age')
+synthetic_data[:, age_index] = np.clip(synthetic_data[:, age_index], 0, 70)  # Limit age to 70 years
 
-    pregnancies_index = data.columns.get_loc('Pregnancies')
-    synthetic_data[:, pregnancies_index] = np.clip(synthetic_data[:, pregnancies_index], 0, 10)  # Limit pregnancies to 10
-
-
-    # Save synthetic data
-    synthetic_df = pd.DataFrame(synthetic_data, columns=data.columns)
-    synthetic_df.to_csv('synthetic_data.csv', index=False)
+pregnancies_index = data.columns.get_loc('Pregnancies')
+synthetic_data[:, pregnancies_index] = np.clip(synthetic_data[:, pregnancies_index], 0, 10)  # Limit pregnancies to 10
 
 
-    # Save synthetic data
-    synthetic_df = pd.DataFrame(synthetic_data, columns=data.columns)
+# Save synthetic data
+synthetic_df = pd.DataFrame(synthetic_data, columns=data.columns)
+synthetic_df.to_csv('synthetic_data.csv', index=False)
 
-    # 'Pregnancies' and 'Outcome' as int
-    synthetic_df['Pregnancies'] = synthetic_df['Pregnancies'].round().astype(int)
-    synthetic_df['Outcome'] = synthetic_df['Outcome'].round().astype(int)
-    synthetic_df['Glucose'] = synthetic_df['Glucose'].round().astype(int)
-    synthetic_df['BloodPressure'] = synthetic_df['BloodPressure'].round().astype(int)
-    synthetic_df['SkinThickness'] = synthetic_df['SkinThickness'].round().astype(int)
-    synthetic_df['Insulin'] = synthetic_df['Insulin'].round().astype(int)
-    synthetic_df['BMI'] = synthetic_df['BMI'].round(1)
-    synthetic_df['Age'] = synthetic_df['Age'].round().astype(int)
-    synthetic_df['DiabetesPedigreeFunction'] = synthetic_df['DiabetesPedigreeFunction'].round(3)
+# Save synthetic data
+synthetic_df = pd.DataFrame(synthetic_data, columns=data.columns)
 
+# 'Pregnancies' and 'Outcome' as int
+synthetic_df['Pregnancies'] = synthetic_df['Pregnancies'].round().astype(int)
+synthetic_df['Outcome'] = synthetic_df['Outcome'].round().astype(int)
+synthetic_df['Glucose'] = synthetic_df['Glucose'].round().astype(int)
+synthetic_df['BloodPressure'] = synthetic_df['BloodPressure'].round().astype(int)
+synthetic_df['SkinThickness'] = synthetic_df['SkinThickness'].round().astype(int)
+synthetic_df['Insulin'] = synthetic_df['Insulin'].round().astype(int)
+synthetic_df['BMI'] = synthetic_df['BMI'].round(1)
+synthetic_df['Age'] = synthetic_df['Age'].round().astype(int)
+synthetic_df['DiabetesPedigreeFunction'] = synthetic_df['DiabetesPedigreeFunction'].round(3)
 
-
-    synthetic_df.to_csv('synthetic_data.csv', index=False)
+synthetic_df.to_csv('synthetic_data.csv', index=False)
     
-if __name__ == '__main__':
-    main()
-
