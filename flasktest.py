@@ -22,11 +22,17 @@ def upload_file():
             file_path = os.path.join(upload_folder, secure_filename(file.filename))
             file.save(file_path)
 
-            main(file.filename)
-            return redirect('/')
+            output_file = main(file.filename)
+            
+            output_file.save("SyntheticHealthData/downloads")
+            
+            return redirect("/download")
         else:
             return "No file uploaded", 400
     return "Invalid request method", 405
 
+@app.route("/download")
+def download():
+    return render_template("download.html", )
 
 app.run(debug=True, port=5001, host='0.0.0.0')

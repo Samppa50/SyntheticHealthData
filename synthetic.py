@@ -122,5 +122,7 @@ def main(name):
     synthetic_df['Age'] = synthetic_df['Age'].round().astype(int)
     synthetic_df['DiabetesPedigreeFunction'] = synthetic_df['DiabetesPedigreeFunction'].round(3)
 
-    synthetic_df.to_csv('synthetic_data.csv', index=False)
+    #synthetic_df.to_csv('synthetic_data.csv', index=False)
 
+    
+    return synthetic_df.to_csv('synthetic_data.csv', index=False)
