@@ -108,7 +108,7 @@ def main(name):
 
     # Save synthetic data
     synthetic_df = pd.DataFrame(synthetic_data, columns=data.columns)
-    synthetic_df.to_csv('synthetic_data.csv', index=False)
+    #synthetic_df.to_csv('synthetic_data.csv', index=False)
 
     # Save synthetic data
     synthetic_df = pd.DataFrame(synthetic_data, columns=data.columns)
@@ -125,6 +125,8 @@ def main(name):
     synthetic_df['DiabetesPedigreeFunction'] = synthetic_df['DiabetesPedigreeFunction'].round(3)
 
     path = 'SyntheticHealthData/downloads/'
+    if not os.path.exists(path):
+        os.makedirs(path)
     synthetic_df.to_csv(os.path.join(path,'synthetic_data.csv'), index=False)
     location = 'synthetic_data.csv'
 
