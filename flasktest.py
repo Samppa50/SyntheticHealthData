@@ -1,6 +1,5 @@
 from flask import Flask, render_template, url_for, request, redirect
 from werkzeug.utils import secure_filename
-import sythetic
 from synthetic import *
 
 app = Flask(__name__)
@@ -21,4 +20,4 @@ def upload_file():
         return print("No file uploaded")
 
 
-app.run(debug=True)
+app.run(debug=True, port=5001, host='0.0.0.0')
