@@ -1,6 +1,6 @@
 from flask import Flask, render_template, url_for, request, redirect
 from werkzeug.utils import secure_filename
-from synthetic import *
+import subprocess
 
 app = Flask(__name__)
 
@@ -14,7 +14,7 @@ def upload_file():
     file = request.files['file']
     if file:
         file.save(f'uploads/{secure_filename(file.filename)}')
-        file.filename
+        subprocess.run(["python3", "synthetic.py"])
         return redirect('/')
     else:
         return print("No file uploaded")
