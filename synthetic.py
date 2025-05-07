@@ -11,7 +11,7 @@ def main(file_name):
     # Load and preprocess the data
     #file_name=flasktest.a
     print(file_name)
-    data = pd.read_csv('./uploads/{file_name}')
+    data = pd.read_csv('uploads/{file_name}')
     columns_to_fix = ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI']
     data[columns_to_fix] = data[columns_to_fix].replace(0, np.nan)
     data = data.dropna(subset=columns_to_fix)
