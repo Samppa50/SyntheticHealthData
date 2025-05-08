@@ -5,7 +5,7 @@ import os
 
 app = Flask(__name__)
 
-output_file = "synthetic_data.csv"
+output_file = "nan"
 
 @app.route("/")
 def index():
@@ -23,15 +23,15 @@ def upload_file():
             file_path = os.path.join(upload_folder, secure_filename(file.filename))
             file.save(file_path)
 
-            output_file_test = main(file.filename)
-            return redirect("/download/synthetic_data.csv")
+            output_file = main(file.filename)
+            return redirect(f"/download/{output_file}")
         else:
             return "No file uploaded", 400
     return "Invalid request method", 405
 
 
-@app.route('/download/synthetic_data.csv')
-def download_file():
+@app.route(f'/download/<output_file>')
+def download_file(output_file):
     return send_from_directory('Files/downloads', output_file, as_attachment=True)
 
 app.run(debug=True, port=5001, host='0.0.0.0')

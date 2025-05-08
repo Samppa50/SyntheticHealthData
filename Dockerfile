@@ -48,4 +48,4 @@ COPY . .
 EXPOSE 5001
 
 # Run the application.
-CMD python3 flasktest.py
+CMD python3 app.py
