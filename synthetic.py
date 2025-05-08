@@ -9,7 +9,7 @@ import os
 
 def main(name):
     # Load and preprocess the data
-    data = pd.read_csv('SyntheticHealthData/uploads/' + name)
+    data = pd.read_csv('Files/uploads/' + name)
     columns_to_fix = ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI']
     data[columns_to_fix] = data[columns_to_fix].replace(0, np.nan)
     data = data.dropna(subset=columns_to_fix)
@@ -124,7 +124,7 @@ def main(name):
     synthetic_df['Age'] = synthetic_df['Age'].round().astype(int)
     synthetic_df['DiabetesPedigreeFunction'] = synthetic_df['DiabetesPedigreeFunction'].round(3)
 
-    path = 'SyntheticHealthData/downloads/'
+    path = 'Files/downloads/'
     if not os.path.exists(path):
         os.makedirs(path)
     synthetic_df.to_csv(os.path.join(path,'synthetic_data.csv'), index=False)
