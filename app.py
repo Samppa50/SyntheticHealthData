@@ -1,6 +1,6 @@
 from flask import Flask, render_template, url_for, request, redirect, send_from_directory
 from werkzeug.utils import secure_filename
-from synthetic import main
+from synthetic import main, generate_file
 import os
 
 app = Flask(__name__)
@@ -19,11 +19,22 @@ def upload_file():
             upload_folder = 'Files/uploads'
             if not os.path.exists(upload_folder):
                 os.makedirs(upload_folder)
-
+            # Save the file to the upload folder
             file_path = os.path.join(upload_folder, secure_filename(file.filename))
             file.save(file_path)
 
-            output_file = main(file.filename)
+            col_names = main(file.filename)
+
+            col_amount = len(col_names)
+            col_values = []
+            for i in range(col_amount*2):
+                col_values.append((f'col{i}'))
+
+            print(col_values)
+
+
+            #callin file generation and getting new files name as return
+            output_file = generate_file(col_values, file.filename)
             return redirect(f"/download/{output_file}")
         else:
             return "No file uploaded", 400

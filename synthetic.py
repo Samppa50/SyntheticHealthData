@@ -7,6 +7,7 @@ from sklearn.preprocessing import MinMaxScaler
 import os
 
 
+
 def main(name):
     # Load and preprocess the data
     data = pd.read_csv('Files/uploads/' + name)
@@ -17,6 +18,26 @@ def main(name):
     for col in non_numeric_cols:
         data[col] = data[col].astype('category').cat.codes
     #data = data.apply(pd.to_numeric, errors='coerce')
+
+    return col
+
+def generate_file(col_values, name):
+    print(col_values)
+    data = pd.read_csv('Files/uploads/' + name)
+
+    col_ingore_zero = []
+    col_bool = []
+
+    for i in range(len(col_values)//2):
+        col_bool.append(col_values[i])
+
+    for i in range(len(col_values)//2, len(col_values)):
+        col_ingore_zero.append(col_values[i])
+
+    print(col_bool)
+    print(col_ingore_zero)
+
+
 
     #columns_to_fix = ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI']
     #data[columns_to_fix] = data[columns_to_fix].replace(0, np.nan)
@@ -83,13 +104,13 @@ def main(name):
         real_data = data_scaled[idx]
         noise = np.random.normal(0, 1, (batch_size, latent_dim))
         generated_data = generator.predict(noise)
-        
+
 
         d_loss_real = discriminator.train_on_batch(real_data, real)
         d_loss_fake = discriminator.train_on_batch(generated_data, fake)
         d_loss = 0.5 * np.add(d_loss_real, d_loss_fake)
-        
-       
+
+
 
         # Train generator
         discriminator.trainable = False
