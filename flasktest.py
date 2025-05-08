@@ -16,7 +16,7 @@ def upload_file():
     if request.method == "POST":
         file = request.files['file']
         if file:
-            upload_folder = 'SyntheticHealthData/uploads'
+            upload_folder = 'Files/uploads'
             if not os.path.exists(upload_folder):
                 os.makedirs(upload_folder)
 
@@ -32,6 +32,6 @@ def upload_file():
 
 @app.route('/download/synthetic_data.csv')
 def download_file():
-    return send_from_directory('downloads', output_file, as_attachment=True)
+    return send_from_directory('Files/downloads', output_file, as_attachment=True)
 
 app.run(debug=True, port=5001, host='0.0.0.0')
