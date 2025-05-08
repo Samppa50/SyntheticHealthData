@@ -124,10 +124,10 @@ def main(name):
     synthetic_df['Age'] = synthetic_df['Age'].round().astype(int)
     synthetic_df['DiabetesPedigreeFunction'] = synthetic_df['DiabetesPedigreeFunction'].round(3)
 
+    synthetic_name = "synthetic_"+name
     path = 'Files/downloads/'
     if not os.path.exists(path):
         os.makedirs(path)
-    synthetic_df.to_csv(os.path.join(path,'synthetic_data.csv'), index=False)
-    location = 'synthetic_data.csv'
+    synthetic_df.to_csv(os.path.join(path, synthetic_name), index=False)
 
-    return location
+    return synthetic_name
