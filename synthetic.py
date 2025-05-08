@@ -4,6 +4,8 @@ from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Dense, LeakyReLU, BatchNormalization, Input
 from tensorflow.keras.optimizers import Adam
 from sklearn.preprocessing import MinMaxScaler
+import os
+
 
 def main(name):
     # Load and preprocess the data
@@ -106,7 +108,7 @@ def main(name):
 
     # Save synthetic data
     synthetic_df = pd.DataFrame(synthetic_data, columns=data.columns)
-    synthetic_df.to_csv('synthetic_data.csv', index=False)
+    #synthetic_df.to_csv('synthetic_data.csv', index=False)
 
     # Save synthetic data
     synthetic_df = pd.DataFrame(synthetic_data, columns=data.columns)
@@ -122,5 +124,10 @@ def main(name):
     synthetic_df['Age'] = synthetic_df['Age'].round().astype(int)
     synthetic_df['DiabetesPedigreeFunction'] = synthetic_df['DiabetesPedigreeFunction'].round(3)
 
-    synthetic_df.to_csv('synthetic_data.csv', index=False)
+    path = 'SyntheticHealthData/downloads/'
+    if not os.path.exists(path):
+        os.makedirs(path)
+    synthetic_df.to_csv(os.path.join(path,'synthetic_data.csv'), index=False)
+    location = 'synthetic_data.csv'
 
+    return location
