@@ -24,13 +24,13 @@
             <h2>{{ item }}</h2>
             <ul>
                 <p>bool</p>
-                <input type="hidden" name="bool_values" value="off">
-                <input type="checkbox" name="bool_values" value="on">
+                <input type="hidden" name="bool_values" value=0>
+                <input type="checkbox" name="bool_values" value=1>
             </ul>
             <ul>
                 <p>ignore zero</p>
-                <input type="hidden" name="ignore_zero_values" value="off">
-                <input type="checkbox" name="ignore_zero_values" value="on">
+                <input type="hidden" name="ignore_zero_values" value=0>
+                <input type="checkbox" name="ignore_zero_values" value=1>
             </ul>
             {% endfor %}
         </ul>

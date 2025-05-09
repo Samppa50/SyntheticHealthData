@@ -33,6 +33,7 @@ def upload_file():
             col_names = main(file.filename)
             col_categories = col_names  # Update the global list with new column names
 
+            global col_amount
             col_amount = len(col_names)
             #tätä ehkä tarvitaan myöhemmin
 
@@ -46,11 +47,12 @@ def submit():
     global output_file
 
 
+
     bool_values = request.form.to_dict(flat=False).get("bool_values", {})
     ignore_zero_values = request.form.to_dict(flat=False).get("ignore_zero_values", {})
-    print("Bool Values:", bool_values)
-    print("Ignore Zero Values:", ignore_zero_values)
 
+
+    col_values = []
 
     col_values = []
     for i in range(len(bool_values)):
@@ -62,9 +64,16 @@ def submit():
         times += 1
     times = 0
 
-    print("col_values:", col_values)
 
-    output_file = generate_file(col_values, file_name)
+    processed_col_values = []
+    for i in range(len(col_values)):
+        if col_values[i] == "0" and i + 1 < len(col_values) and col_values[i + 1] == "1":
+            continue  # Skip the "off" if followed by "on"
+        processed_col_values.append(col_values[i])
+
+    print("Processed col_values:", processed_col_values)
+
+    output_file = generate_file(processed_col_values, file_name)
     return redirect(f"/download/{output_file}")
 
 
