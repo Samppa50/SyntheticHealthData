@@ -1,2 +1,2 @@
 *.csv
-**/__pycache__
+__pycache__/synthetic.cpython-312.pyc
