@@ -7,20 +7,51 @@ from sklearn.preprocessing import MinMaxScaler
 import os
 
 
+
 def main(name):
     # Load and preprocess the data
     data = pd.read_csv('Files/uploads/' + name)
     print("column names:")
     for col in data.columns:
-        print(col)
+        print(list(data.columns))
     non_numeric_cols = data.select_dtypes(include=['object', 'category']).columns
     for col in non_numeric_cols:
         data[col] = data[col].astype('category').cat.codes
     #data = data.apply(pd.to_numeric, errors='coerce')
 
-    #columns_to_fix = ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI']
-    #data[columns_to_fix] = data[columns_to_fix].replace(0, np.nan)
-    #data = data.dropna(subset=columns_to_fix)
+    return col
+
+def generate_file(col_values, name):
+    data = pd.read_csv('Files/uploads/' + name)
+    rows = 1000
+    col_ignore_zero_test = [1, 1, 0, 0, 0, 0, 0, 0]
+    
+    ignore_zero = [col for col, flag in zip(data.columns, col_ignore_zero_test) if flag == 1]
+
+    
+    print(col_values)
+    
+    
+    data[ignore_zero] = data[ignore_zero].replace(0, np.nan)
+    data = data.dropna(subset=ignore_zero)
+    
+    non_numeric_cols = data.select_dtypes(include=['object', 'category']).columns
+    for col in non_numeric_cols:
+        data[col] = data[col].astype('category').cat.codes
+
+    col_ingore_zero = []
+    col_bool = []
+
+    for i in range(len(col_values)//2):
+        col_bool.append(col_values[i])
+
+    for i in range(len(col_values)//2, len(col_values)):
+        col_ingore_zero.append(col_values[i])
+
+    print(col_bool)
+    print(col_ingore_zero)
+
+
     scaler = MinMaxScaler()
     data_scaled = scaler.fit_transform(data)
 
@@ -83,13 +114,13 @@ def main(name):
         real_data = data_scaled[idx]
         noise = np.random.normal(0, 1, (batch_size, latent_dim))
         generated_data = generator.predict(noise)
-        
+
 
         d_loss_real = discriminator.train_on_batch(real_data, real)
         d_loss_fake = discriminator.train_on_batch(generated_data, fake)
         d_loss = 0.5 * np.add(d_loss_real, d_loss_fake)
-        
-       
+
+
 
         # Train generator
         discriminator.trainable = False
@@ -101,7 +132,7 @@ def main(name):
             print(f"{epoch} [D loss: {d_loss[0]}, acc.: {100 * d_loss[1]}%] [G loss: {g_loss}]")
 
     # Generate synthetic data
-    noise = np.random.normal(0, 1, (768, latent_dim))
+    noise = np.random.normal(0, 1, (rows, latent_dim))
     synthetic_data = generator.predict(noise)
     synthetic_data = scaler.inverse_transform(synthetic_data)
 
@@ -123,19 +154,13 @@ def main(name):
     synthetic_df = pd.DataFrame(synthetic_data, columns=data.columns)
     #synthetic_df.to_csv('synthetic_data.csv', index=False)
 
-    # Save synthetic data
-    synthetic_df = pd.DataFrame(synthetic_data, columns=data.columns)
+    # Modifing synthetic data into the desired form
+    col_bool_test = [0, 1, 0, 1, 0, 1, 0, 1]
+    
+    convert_bool = [col for col, flag in zip(data.columns, col_bool_test) if flag == 1]
 
-    # 'Pregnancies' and 'Outcome' as int
-    #synthetic_df['Pregnancies'] = synthetic_df['Pregnancies'].round().astype(int)
-    #synthetic_df['Outcome'] = synthetic_df['Outcome'].round().astype(int)
-    #synthetic_df['Glucose'] = synthetic_df['Glucose'].round().astype(int)
-    #synthetic_df['BloodPressure'] = synthetic_df['BloodPressure'].round().astype(int)
-    #synthetic_df['SkinThickness'] = synthetic_df['SkinThickness'].round().astype(int)
-    #synthetic_df['Insulin'] = synthetic_df['Insulin'].round().astype(int)
-    #synthetic_df['BMI'] = synthetic_df['BMI'].round(1)
-    #synthetic_df['Age'] = synthetic_df['Age'].round().astype(int)
-    #synthetic_df['DiabetesPedigreeFunction'] = synthetic_df['DiabetesPedigreeFunction'].round(3)
+    synthetic_df[convert_bool] = synthetic_df[convert_bool].round().astype(int)
+    
 
     synthetic_name = "synthetic_"+name
     path = 'Files/downloads/'
