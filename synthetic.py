@@ -12,18 +12,23 @@ def main(name):
     # Load and preprocess the data
     data = pd.read_csv('Files/uploads/' + name)
     print("column names:")
+    col_names = list(data.columns)
     for col in data.columns:
         print(col)
+    print(col_names)
     non_numeric_cols = data.select_dtypes(include=['object', 'category']).columns
     for col in non_numeric_cols:
         data[col] = data[col].astype('category').cat.codes
     #data = data.apply(pd.to_numeric, errors='coerce')
-
-    return col
+    return col_names
 
 def generate_file(col_values, name):
     print(col_values)
     data = pd.read_csv('Files/uploads/' + name)
+
+    non_numeric_cols = data.select_dtypes(include=['object', 'category']).columns
+    for col in non_numeric_cols:
+        data[col] = data[col].astype('category').cat.codes
 
     col_ingore_zero = []
     col_bool = []
