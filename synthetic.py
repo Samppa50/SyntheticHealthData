@@ -12,16 +12,17 @@ def main(name):
     # Load and preprocess the data
     data = pd.read_csv('Files/uploads/' + name)
     print("column names:")
+    col_names = list(data.columns)
     for col in data.columns:
-        print(list(data.columns))
     non_numeric_cols = data.select_dtypes(include=['object', 'category']).columns
     for col in non_numeric_cols:
         data[col] = data[col].astype('category').cat.codes
     #data = data.apply(pd.to_numeric, errors='coerce')
+    return col_names
 
-    return col
 
-def generate_file(col_values, name):
+def generate_file(col_values, amount, name):
+    print(col_values)
     data = pd.read_csv('Files/uploads/' + name)
     rows = 1000
     col_ignore_zero_test = [1, 1, 0, 0, 0, 0, 0, 0]
@@ -35,6 +36,10 @@ def generate_file(col_values, name):
     data[ignore_zero] = data[ignore_zero].replace(0, np.nan)
     data = data.dropna(subset=ignore_zero)
     
+    non_numeric_cols = data.select_dtypes(include=['object', 'category']).columns
+    for col in non_numeric_cols:
+        data[col] = data[col].astype('category').cat.codes
+
     non_numeric_cols = data.select_dtypes(include=['object', 'category']).columns
     for col in non_numeric_cols:
         data[col] = data[col].astype('category').cat.codes
@@ -132,7 +137,8 @@ def generate_file(col_values, name):
             print(f"{epoch} [D loss: {d_loss[0]}, acc.: {100 * d_loss[1]}%] [G loss: {g_loss}]")
 
     # Generate synthetic data
-    noise = np.random.normal(0, 1, (rows, latent_dim))
+
+    noise = np.random.normal(0, 1, (amount, latent_dim))
     synthetic_data = generator.predict(noise)
     synthetic_data = scaler.inverse_transform(synthetic_data)
 
