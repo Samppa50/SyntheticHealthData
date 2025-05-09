@@ -22,7 +22,7 @@ def main(name):
     #data = data.apply(pd.to_numeric, errors='coerce')
     return col_names
 
-def generate_file(col_values, name):
+def generate_file(col_values, amount, name):
     print(col_values)
     data = pd.read_csv('Files/uploads/' + name)
 
@@ -127,7 +127,7 @@ def generate_file(col_values, name):
             print(f"{epoch} [D loss: {d_loss[0]}, acc.: {100 * d_loss[1]}%] [G loss: {g_loss}]")
 
     # Generate synthetic data
-    noise = np.random.normal(0, 1, (768, latent_dim))
+    noise = np.random.normal(0, 1, (amount, latent_dim))
     synthetic_data = generator.predict(noise)
     synthetic_data = scaler.inverse_transform(synthetic_data)
 

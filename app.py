@@ -46,15 +46,13 @@ def upload_file():
 def submit():
     global output_file
 
-
-
     bool_values = request.form.to_dict(flat=False).get("bool_values", {})
     ignore_zero_values = request.form.to_dict(flat=False).get("ignore_zero_values", {})
+    line_amount = request.form.get("amount", default=100, type=int)
 
-
+    print("lines wanted:", line_amount)
     col_values = []
 
-    col_values = []
     for i in range(len(bool_values)):
         col_values.append((bool_values[i]))
 
@@ -73,7 +71,7 @@ def submit():
 
     print("Processed col_values:", processed_col_values)
 
-    output_file = generate_file(processed_col_values, file_name)
+    output_file = generate_file(processed_col_values, line_amount ,file_name)
     return redirect(f"/download/{output_file}")
 
 
