@@ -14,7 +14,7 @@ def main(name):
     print("column names:")
     col_names = list(data.columns)
     for col in data.columns:
-    non_numeric_cols = data.select_dtypes(include=['object', 'category']).columns
+        non_numeric_cols = data.select_dtypes(include=['object', 'category']).columns
     for col in non_numeric_cols:
         data[col] = data[col].astype('category').cat.codes
     #data = data.apply(pd.to_numeric, errors='coerce')
@@ -26,16 +26,16 @@ def generate_file(col_values, amount, name):
     data = pd.read_csv('Files/uploads/' + name)
     rows = 1000
     col_ignore_zero_test = [1, 1, 0, 0, 0, 0, 0, 0]
-    
+
     ignore_zero = [col for col, flag in zip(data.columns, col_ignore_zero_test) if flag == 1]
 
-    
+
     print(col_values)
-    
-    
+
+
     data[ignore_zero] = data[ignore_zero].replace(0, np.nan)
     data = data.dropna(subset=ignore_zero)
-    
+
     non_numeric_cols = data.select_dtypes(include=['object', 'category']).columns
     for col in non_numeric_cols:
         data[col] = data[col].astype('category').cat.codes
@@ -162,11 +162,11 @@ def generate_file(col_values, amount, name):
 
     # Modifing synthetic data into the desired form
     col_bool_test = [0, 1, 0, 1, 0, 1, 0, 1]
-    
+
     convert_bool = [col for col, flag in zip(data.columns, col_bool_test) if flag == 1]
 
     synthetic_df[convert_bool] = synthetic_df[convert_bool].round().astype(int)
-    
+
 
     synthetic_name = "synthetic_"+name
     path = 'Files/downloads/'
