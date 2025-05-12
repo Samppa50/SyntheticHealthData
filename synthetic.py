@@ -5,11 +5,18 @@ from tensorflow.keras.layers import Dense, LeakyReLU, BatchNormalization, Input
 from tensorflow.keras.optimizers import Adam
 from sklearn.preprocessing import MinMaxScaler
 import os
+import openpyxl
 
 
 
 def main(name):
     # Load and preprocess the data
+    if name.endswith('.xlsx'):
+        df = pd.read_excel(name, engine=None)
+        csv_file = os.path.splitext(name)[0]
+        df.to_csv(csv_file, index=False)
+        
+    
     data = pd.read_csv('Files/uploads/' + name)
     print("column names:")
     col_names = list(data.columns)
