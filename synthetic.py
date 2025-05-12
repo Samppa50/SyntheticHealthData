@@ -17,7 +17,6 @@ def main(name):
         non_numeric_cols = data.select_dtypes(include=['object', 'category']).columns
     for col in non_numeric_cols:
         data[col] = data[col].astype('category').cat.codes
-    #data = data.apply(pd.to_numeric, errors='coerce')
     return col_names
 
 
@@ -142,23 +141,8 @@ def generate_file(col_values, amount, name):
     synthetic_data = generator.predict(noise)
     synthetic_data = scaler.inverse_transform(synthetic_data)
 
-    # Clip negative values for specific columns
-    #columns_to_clip = ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'Age', 'Pregnancies']
-    #for col in columns_to_clip:
-       # col_index = data.columns.get_loc(col)
-    #synthetic_data[:, col_index] = np.clip(synthetic_data[:, col_index], 0, None)
-
-    # Apply additional constraints
-    #age_index = data.columns.get_loc('Age')
-    #synthetic_data[:, age_index] = np.clip(synthetic_data[:, age_index], 0, 70)  # Limit age to 70 years
-
-    #pregnancies_index = data.columns.get_loc('Pregnancies')
-    #synthetic_data[:, pregnancies_index] = np.clip(synthetic_data[:, pregnancies_index], 0, 10)  # Limit pregnancies to 10
-
-
     # Save synthetic data
     synthetic_df = pd.DataFrame(synthetic_data, columns=data.columns)
-    #synthetic_df.to_csv('synthetic_data.csv', index=False)
 
     # Modifing synthetic data into the desired form
     col_bool_test = [0, 1, 0, 1, 0, 1, 0, 1]

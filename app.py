@@ -12,7 +12,9 @@ file_name = ""
 @app.route("/")
 def index():
     global col_categories  # Ensure the global variable is used
-    return render_template("index.html", items=col_categories)
+    global file_name
+    file_uploaded = bool(file_name)
+    return render_template("index.html", items=col_categories, file_uploaded=file_uploaded)
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload_file():
@@ -39,7 +41,7 @@ def upload_file():
 
             return redirect("/")
         else:
-            return "No file uploaded", 400
+            return "Missing file", 400
     return "Invalid request method", 405
 
 @app.route("/submit", methods=["GET", "POST"])
