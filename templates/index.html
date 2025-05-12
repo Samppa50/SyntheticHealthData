@@ -18,26 +18,28 @@
     </div>
 
     <div>
-    <form action="/submit" method="post">
-        <ul>
-            {% for item in items %}
-            <h2>{{ item }}</h2>
+        {% if file_uploaded %}
+        <form action="/submit" method="post">
             <ul>
-                <p>bool</p>
-                <input type="hidden" name="bool_values" value=0>
-                <input type="checkbox" name="bool_values" value=1>
+                {% for item in items %}
+                <h2>{{ item }}</h2>
+                <ul>
+                    <p>bool</p>
+                    <input type="hidden" name="bool_values" value=0>
+                    <input type="checkbox" name="bool_values" value=1>
+                </ul>
+                <ul>
+                    <p>ignore zero</p>
+                    <input type="hidden" name="ignore_zero_values" value=0>
+                    <input type="checkbox" name="ignore_zero_values" value=1>
+                </ul>
+                {% endfor %}
             </ul>
-            <ul>
-                <p>ignore zero</p>
-                <input type="hidden" name="ignore_zero_values" value=0>
-                <input type="checkbox" name="ignore_zero_values" value=1>
-            </ul>
-            {% endfor %}
-        </ul>
-        <input type="number" name="amount" placeholder="Enter a number">
-        <input type="submit" value="Submit">
-    </form>
-</div>
+            <input type="number" name="amount" placeholder="Enter a number">
+            <input type="submit" value="Submit">
+        </form>
+        {% endif %}
+    </div>
 
 </body>
 </html>
