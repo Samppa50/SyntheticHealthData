@@ -38,6 +38,12 @@ def upload_file():
             global col_amount
             col_amount = len(col_names)
             #tätä ehkä tarvitaan myöhemmin
+            if file.filename.endswith('.xlsx'):
+                filename = os.path.splitext('Files/uploads/' + file.filename)[0]
+                file_name = filename + ".csv"
+                file_name = os.path.basename(file_name)
+
+
 
             return redirect("/")
         else:

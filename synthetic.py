@@ -5,12 +5,24 @@ from tensorflow.keras.layers import Dense, LeakyReLU, BatchNormalization, Input
 from tensorflow.keras.optimizers import Adam
 from sklearn.preprocessing import MinMaxScaler
 import os
+import openpyxl
 
 
 
 def main(name):
     # Load and preprocess the data
-    data = pd.read_csv('Files/uploads/' + name)
+    if name.endswith('.xlsx'):
+        df = pd.read_excel('Files/uploads/' + name, engine=None)
+        filename = os.path.splitext('Files/uploads/' + name)[0]
+        csv_name = filename + ".csv"
+        df.to_csv(csv_name, index=False)
+        name = os.path.basename(csv_name)
+        print(name)
+
+        data = pd.read_csv(csv_name)
+    else:
+        data = pd.read_csv('Files/uploads/' + name)
+
     print("column names:")
     col_names = list(data.columns)
     for col in data.columns:
@@ -22,7 +34,7 @@ def main(name):
 
 def generate_file(col_values, amount, name):
     print(col_values)
-    data = pd.read_csv('Files/uploads/' + name)
+    data = pd.read_csv('Files/uploads/' + name, encoding="ISO-8859-1", on_bad_lines='skip')
     rows = 1000
     col_ignore_zero_test = [1, 1, 0, 0, 0, 0, 0, 0]
 
