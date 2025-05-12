@@ -6,40 +6,50 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 </head>
 <body>
-    <header>
-        <h1>please upload your .csv file</h1>
-    </header>
+    <div class="container">
+        <header>
+            <h1>please upload your .csv file</h1>
+        </header>
 
-    <div>
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <input type="file" name="file" accept=".csv">
-            <input type="submit" value="Upload">
-        </form>
+        <div class="upload-form">
+            <form action="/upload" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" accept=".csv" class="file-input">
+                <input type="submit" value="Upload" class="button">
+            </form>
+        </div>
+
+        <div class="form">
+            {% if file_uploaded %}
+            <form action="/submit" method="post">
+                <div class="category">
+                    {% for item in items %}
+                    <div class="category-block">
+                        <h2>{{ item }}</h2>
+                        <div class="options">
+                            <ul>
+                                <p>bool</p>
+                                <input type="hidden" name="bool_values" value=0>
+                                <input type="checkbox" name="bool_values" value=1>
+                            </ul>
+                            <ul>
+                                <p>ignore zero</p>
+                                <input type="hidden" name="ignore_zero_values" value=0>
+                                <input type="checkbox" name="ignore_zero_values" value=1>
+                            </ul>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="input-field">
+                    <label for="amount">Enter number of wanted lines:</label>
+                    <input type="number" name="amount" placeholder="Enter a number">
+                </div>
+                <div class="box">
+                    <input type="submit" value="Submit" class="button">
+                </div>
+            </form>
+            {% endif %}
+        </div>
     </div>
-
-    <div>
-        {% if file_uploaded %}
-        <form action="/submit" method="post">
-            <ul>
-                {% for item in items %}
-                <h2>{{ item }}</h2>
-                <ul>
-                    <p>bool</p>
-                    <input type="hidden" name="bool_values" value=0>
-                    <input type="checkbox" name="bool_values" value=1>
-                </ul>
-                <ul>
-                    <p>ignore zero</p>
-                    <input type="hidden" name="ignore_zero_values" value=0>
-                    <input type="checkbox" name="ignore_zero_values" value=1>
-                </ul>
-                {% endfor %}
-            </ul>
-            <input type="number" name="amount" placeholder="Enter a number">
-            <input type="submit" value="Submit">
-        </form>
-        {% endif %}
-    </div>
-
 </body>
 </html>
