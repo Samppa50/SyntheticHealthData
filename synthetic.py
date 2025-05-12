@@ -12,12 +12,18 @@ import openpyxl
 def main(name):
     # Load and preprocess the data
     if name.endswith('.xlsx'):
-        df = pd.read_excel(name, engine=None)
-        csv_file = os.path.splitext(name)[0]
-        df.to_csv(csv_file, index=False)
+        df = pd.read_excel('Files/uploads/' + name, engine=None)
+        filename = os.path.splitext('Files/uploads/' + name)[0]
+        csv_name = filename + ".csv"
+        df.to_csv(csv_name, index=False)
+        file_path = 'Files/uploads/' + name
+        name = os.path.basename(file_path)
+        print(name)
         
+        data = pd.read_csv(csv_name)
+    else:
+        data = pd.read_csv('Files/uploads/' + name)
     
-    data = pd.read_csv('Files/uploads/' + name)
     print("column names:")
     col_names = list(data.columns)
     for col in data.columns:
