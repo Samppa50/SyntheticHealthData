@@ -86,7 +86,6 @@ def submit():
     # Removing the original file after processing
     upload_folder = 'Files/uploads'
     if os.path.exists(os.path.join(upload_folder)):
-        #os.rmdir(upload_folder)
         shutil.rmtree(upload_folder, ignore_errors=True)
 
     return redirect(f"/download/{output_file}")
