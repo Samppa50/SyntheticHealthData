@@ -2,6 +2,7 @@ from flask import Flask, render_template, url_for, request, redirect, send_from_
 from werkzeug.utils import secure_filename
 from synthetic import main, generate_file
 import os
+import shutil
 
 app = Flask(__name__)
 
@@ -81,6 +82,13 @@ def submit():
     print("Processed col_values:", processed_col_values)
 
     output_file = generate_file(processed_col_values, line_amount, epoch_amount ,file_name)
+
+    # Removing the original file after processing
+    upload_folder = 'Files/uploads'
+    if os.path.exists(os.path.join(upload_folder)):
+        #os.rmdir(upload_folder)
+        shutil.rmtree(upload_folder, ignore_errors=True)
+
     return redirect(f"/download/{output_file}")
 
 
