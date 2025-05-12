@@ -32,7 +32,7 @@ def main(name):
     return col_names
 
 
-def generate_file(col_values, amount, name):
+def generate_file(col_values, line_amount, epoch_amount, name):
     print(col_values)
     data = pd.read_csv('Files/uploads/' + name, encoding="ISO-8859-1", on_bad_lines='skip')
     rows = 1000
@@ -77,7 +77,7 @@ def generate_file(col_values, amount, name):
     # Hyperparameters
     latent_dim = 10
     data_dim = data_scaled.shape[1]
-    epochs = 100
+    epochs = epoch_amount
     batch_size = 64
 
     # Define the generator
@@ -152,7 +152,7 @@ def generate_file(col_values, amount, name):
 
     # Generate synthetic data
 
-    noise = np.random.normal(0, 1, (amount, latent_dim))
+    noise = np.random.normal(0, 1, (line_amount, latent_dim))
     synthetic_data = generator.predict(noise)
     synthetic_data = scaler.inverse_transform(synthetic_data)
 

@@ -56,7 +56,8 @@ def submit():
 
     bool_values = request.form.to_dict(flat=False).get("bool_values", {})
     ignore_zero_values = request.form.to_dict(flat=False).get("ignore_zero_values", {})
-    line_amount = request.form.get("amount", default=100, type=int)
+    line_amount = request.form.get("line-amount", default=100, type=int)
+    epoch_amount = request.form.get("epoch-amount", default=100, type=int)
 
     print("lines wanted:", line_amount)
     col_values = []
@@ -79,7 +80,7 @@ def submit():
 
     print("Processed col_values:", processed_col_values)
 
-    output_file = generate_file(processed_col_values, line_amount ,file_name)
+    output_file = generate_file(processed_col_values, line_amount, epoch_amount ,file_name)
     return redirect(f"/download/{output_file}")
 
 
