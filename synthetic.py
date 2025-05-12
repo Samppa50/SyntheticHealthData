@@ -26,14 +26,11 @@ def generate_file(col_values, amount, name):
     rows = 1000
     col_ignore_zero_test = [1, 1, 0, 0, 0, 0, 0, 0]
 
-    ignore_zero = [col for col, flag in zip(data.columns, col_ignore_zero_test) if flag == 1]
 
 
     print(col_values)
 
 
-    data[ignore_zero] = data[ignore_zero].replace(0, np.nan)
-    data = data.dropna(subset=ignore_zero)
 
     non_numeric_cols = data.select_dtypes(include=['object', 'category']).columns
     for col in non_numeric_cols:
@@ -43,17 +40,23 @@ def generate_file(col_values, amount, name):
     for col in non_numeric_cols:
         data[col] = data[col].astype('category').cat.codes
 
-    col_ingore_zero = []
+    col_ignore_zero = []
     col_bool = []
 
     for i in range(len(col_values)//2):
         col_bool.append(col_values[i])
 
     for i in range(len(col_values)//2, len(col_values)):
-        col_ingore_zero.append(col_values[i])
+        col_ignore_zero.append(col_values[i])
 
     print(col_bool)
-    print(col_ingore_zero)
+    print(col_ignore_zero)
+
+
+
+    ignore_zero = [col for col, flag in zip(data.columns, list(map(int, col_ignore_zero))) if flag == 1]
+    data[ignore_zero] = data[ignore_zero].replace(0, np.nan)
+    data = data.dropna(subset=ignore_zero)
 
 
     scaler = MinMaxScaler()
@@ -147,7 +150,7 @@ def generate_file(col_values, amount, name):
     # Modifing synthetic data into the desired form
     col_bool_test = [0, 1, 0, 1, 0, 1, 0, 1]
 
-    convert_bool = [col for col, flag in zip(data.columns, col_bool_test) if flag == 1]
+    convert_bool = [col for col, flag in zip(data.columns, list(map(int,col_bool))) if flag == 1]
 
     synthetic_df[convert_bool] = synthetic_df[convert_bool].round().astype(int)
 
