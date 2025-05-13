@@ -7,7 +7,13 @@ from sklearn.preprocessing import MinMaxScaler
 import os
 import openpyxl
 
+shared_state = {"progress": 0}
 
+def update_progress(value):
+    shared_state["progress"] = value
+
+def get_progress():
+    return shared_state["progress"]
 
 def main(name):
     # Load and preprocess the data
@@ -35,8 +41,10 @@ def generate_file(col_values, line_amount, epoch_amount, name):
     data = pd.read_csv('Files/uploads/' + name, encoding="ISO-8859-1", on_bad_lines='skip')
 
     df_decimal_source = pd.read_csv('Files/uploads/' + name, dtype=str)
-    
+
+   
     #counts the decimals that are used in the synthetic data
+
     def count_decimals(value):
         if pd.isna(value) or '.' not in value:
             return 0
@@ -140,6 +148,10 @@ def generate_file(col_values, line_amount, epoch_amount, name):
         noise = np.random.normal(0, 1, (batch_size, latent_dim))
         g_loss = gan.train_on_batch(noise, real)
 
+        # Update progress
+        progress = (epoch + 1) / epochs * 100
+        update_progress(progress)
+
         # Print progress
         if epoch % 1000 == 0:
             print(f"{epoch} [D loss: {d_loss[0]}, acc.: {100 * d_loss[1]}%] [G loss: {g_loss}]")
@@ -164,7 +176,7 @@ def generate_file(col_values, line_amount, epoch_amount, name):
                 decimals = int(decimal_places[col])
                 synthetic_df[col] = pd.to_numeric(synthetic_df[col], errors='coerce').round(decimals)
             except ValueError:
-                pass 
+                pass
 
 
     synthetic_name = "synthetic_"+name

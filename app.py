@@ -1,8 +1,9 @@
 from flask import Flask, render_template, url_for, request, redirect, send_from_directory
 from werkzeug.utils import secure_filename
-from synthetic import main, generate_file
+from synthetic import main, generate_file, get_progress, update_progress
 import os
 import shutil
+
 
 app = Flask(__name__)
 
@@ -12,10 +13,17 @@ file_name = ""
 
 @app.route("/")
 def index():
-    global col_categories  # Ensure the global variable is used
+    global col_categories
     global file_name
     file_uploaded = bool(file_name)
+    progress = get_progress()
+    if progress == 100:
+        update_progress(0)  # Reset progress after completion
     return render_template("index.html", items=col_categories, file_uploaded=file_uploaded)
+
+@app.route("/progress")
+def get_progress_route():
+    return {"progress": get_progress()}
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload_file():
@@ -36,9 +44,6 @@ def upload_file():
             col_names = main(file.filename)
             col_categories = col_names  # Update the global list with new column names
 
-            #global col_amount
-            #col_amount = len(col_names)
-            #tätä ehkä tarvitaan myöhemmin
 
             if file.filename.endswith('.xlsx'):
                 filename = os.path.splitext('Files/uploads/' + file.filename)[0]
@@ -56,6 +61,7 @@ def upload_file():
 def submit():
     global output_file
     global file_name
+
 
     bool_values = request.form.to_dict(flat=False).get("bool_values", {})
     ignore_zero_values = request.form.to_dict(flat=False).get("ignore_zero_values", {})
@@ -96,8 +102,8 @@ def submit():
     col_categories = []
     file_name = ""
 
-
     return redirect(f"/download/{output_file}")
+
 
 
 @app.route(f'/download/<output_file>')
