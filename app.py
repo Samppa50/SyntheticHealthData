@@ -18,7 +18,7 @@ def index():
     file_uploaded = bool(file_name)
     progress = get_progress()
     if progress == 100:
-        update_progress(0)  # Reset progress after completion
+        update_progress(0)  # reset progress if this has been used before
     return render_template("index.html", items=col_categories, file_uploaded=file_uploaded)
 
 @app.route("/progress")
@@ -27,7 +27,7 @@ def get_progress_route():
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload_file():
-    global col_categories  # Update the global variable
+    global col_categories
     if request.method == "POST":
         file = request.files['file']
         if file:
@@ -35,14 +35,14 @@ def upload_file():
             if not os.path.exists(upload_folder):
                 os.makedirs(upload_folder)
 
-            file_path = os.path.join(upload_folder, secure_filename(file.filename)) # Save the file to the upload folder
+            file_path = os.path.join(upload_folder, secure_filename(file.filename)) # save the file to the upload folder
             file.save(file_path)
             global file_name
             file_name = file.filename
 
             global col_names
             col_names = main(file.filename)
-            col_categories = col_names  # Update the global list with new column names
+            col_categories = col_names
 
 
             if file.filename.endswith('.xlsx'):
@@ -82,6 +82,7 @@ def submit():
     times = 0
 
 
+    # this is done because the index file always provides the off value but on value only when used.
     processed_col_values = []
     for i in range(len(col_values)):
         if col_values[i] == "0" and i + 1 < len(col_values) and col_values[i + 1] == "1":
@@ -92,12 +93,12 @@ def submit():
 
     output_file = generate_file(processed_col_values, line_amount, epoch_amount ,file_name)
 
-    # Removing the original file after processing
+    # removing the original file after processing
     upload_folder = 'Files/uploads'
     if os.path.exists(os.path.join(upload_folder)):
         shutil.rmtree(upload_folder, ignore_errors=True)
 
-    #clearing the global variables
+    # clearing the global variables
     global col_categories
     col_categories = []
     file_name = ""

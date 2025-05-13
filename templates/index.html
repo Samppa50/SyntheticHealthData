@@ -23,6 +23,7 @@
         <div class="progress-container" id="progress-container" style="display: none;">
             <div id="progress-bar" class="progress-bar" style="width: 0%;"></div>
         </div>
+        <p id="eta" style="text-align: center; font-size: 14px; margin-top: 10px; display: none;">ETA: Calculating...</p>
 
         <div class="form">
             {% if file_uploaded %}
@@ -63,29 +64,50 @@
         </div>
     </div>
     <script>
+        let startTime = null;
+
         function updateProgress() {
             fetch('/progress')
                 .then(response => response.json())
                 .then(data => {
                     const progressBar = document.getElementById('progress-bar');
                     const progressContainer = document.getElementById('progress-container');
+                    const etaElement = document.getElementById('eta');
 
                     if (data.progress > 0) {
                         progressContainer.style.display = "block";
+                        etaElement.style.display = "block";
+
+
+                        if (!startTime) {
+                            startTime = Date.now();
+                        }
                     }
 
                     progressBar.style.width = data.progress + '%';
 
+                    if (data.progress > 0 && data.progress < 100) {
+                        const elapsedTime = (Date.now() - startTime) / 1000;
+                        const estimatedTotalTime = (elapsedTime / data.progress) * 100;
+                        const remainingTime = Math.max(0, estimatedTotalTime - elapsedTime);
+
+                        const minutes = Math.floor(remainingTime / 60);
+                        const seconds = Math.floor(remainingTime % 60);
+                        etaElement.textContent = `ETA: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    }
+
                     if (data.progress < 100) {
                         setTimeout(updateProgress, 500);
                     } else {
-                    // Refresh the page when progress is complete
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000); // Add a short delay before refreshing
-                }
+                        // hiding ETA and refresh the page when progress is complete. also the categories go away
+                        etaElement.textContent = "Processing complete!";
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000); // adding a short delay before refreshing
+                    }
                 });
         }
+
         const form = document.querySelector("form[action='/submit']");
         form.addEventListener("submit", function () {
             updateProgress();
