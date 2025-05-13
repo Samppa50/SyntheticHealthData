@@ -17,13 +17,12 @@ def main(name):
         csv_name = filename + ".csv"
         df.to_csv(csv_name, index=False)
         name = os.path.basename(csv_name)
-        print(name)
 
         data = pd.read_csv(csv_name)
     else:
         data = pd.read_csv('Files/uploads/' + name)
 
-    print("column names:")
+    #Converting non numeric values into numbers
     col_names = list(data.columns)
     for col in data.columns:
         non_numeric_cols = data.select_dtypes(include=['object', 'category']).columns
@@ -31,17 +30,18 @@ def main(name):
         data[col] = data[col].astype('category').cat.codes
     return col_names
 
-
+    #Generating the synthetic file
 def generate_file(col_values, line_amount, epoch_amount, name):
-    print(col_values)
     data = pd.read_csv('Files/uploads/' + name, encoding="ISO-8859-1", on_bad_lines='skip')
-    rows = 1000
-    col_ignore_zero_test = [1, 1, 0, 0, 0, 0, 0, 0]
 
+    df_decimal_source = pd.read_csv('Files/uploads/' + name, dtype=str)
+    
+    def count_decimals(value):
+        if pd.isna(value) or '.' not in value:
+            return 0
+        return len(value.split('.')[-1])
 
-
-    print(col_values)
-
+    decimal_places = df_decimal_source.applymap(count_decimals).max()
 
 
     non_numeric_cols = data.select_dtypes(include=['object', 'category']).columns
@@ -60,11 +60,6 @@ def generate_file(col_values, line_amount, epoch_amount, name):
 
     for i in range(len(col_values)//2, len(col_values)):
         col_ignore_zero.append(col_values[i])
-
-    print(col_bool)
-    print(col_ignore_zero)
-
-
 
     ignore_zero = [col for col, flag in zip(data.columns, list(map(int, col_ignore_zero))) if flag == 1]
     data[ignore_zero] = data[ignore_zero].replace(0, np.nan)
@@ -89,7 +84,7 @@ def generate_file(col_values, line_amount, epoch_amount, name):
             Dense(256),
             LeakyReLU(alpha=0.2),
             BatchNormalization(momentum=0.8),
-            Dense(output_dim, activation='sigmoid')  # Changed activation to 'sigmoid'
+            Dense(output_dim, activation='sigmoid')
         ])
         return model
 
@@ -139,8 +134,6 @@ def generate_file(col_values, line_amount, epoch_amount, name):
         d_loss_fake = discriminator.train_on_batch(generated_data, fake)
         d_loss = 0.5 * np.add(d_loss_real, d_loss_fake)
 
-
-
         # Train generator
         discriminator.trainable = False
         noise = np.random.normal(0, 1, (batch_size, latent_dim))
@@ -151,7 +144,6 @@ def generate_file(col_values, line_amount, epoch_amount, name):
             print(f"{epoch} [D loss: {d_loss[0]}, acc.: {100 * d_loss[1]}%] [G loss: {g_loss}]")
 
     # Generate synthetic data
-
     noise = np.random.normal(0, 1, (line_amount, latent_dim))
     synthetic_data = generator.predict(noise)
     synthetic_data = scaler.inverse_transform(synthetic_data)
@@ -160,11 +152,18 @@ def generate_file(col_values, line_amount, epoch_amount, name):
     synthetic_df = pd.DataFrame(synthetic_data, columns=data.columns)
 
     # Modifing synthetic data into the desired form
-    col_bool_test = [0, 1, 0, 1, 0, 1, 0, 1]
-
     convert_bool = [col for col, flag in zip(data.columns, list(map(int,col_bool))) if flag == 1]
 
     synthetic_df[convert_bool] = synthetic_df[convert_bool].round().astype(int)
+    
+    #Rounding the synthetic values with the right decimal amounts
+    for col in synthetic_df.columns:
+        if col in decimal_places:
+            try:
+                decimals = int(decimal_places[col])
+                synthetic_df[col] = pd.to_numeric(synthetic_df[col], errors='coerce').round(decimals)
+            except ValueError:
+                pass 
 
 
     synthetic_name = "synthetic_"+name
