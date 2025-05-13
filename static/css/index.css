@@ -108,3 +108,20 @@ body{
     text-align: center;
     margin-top: 30vh;
 }
+
+.progress-container {
+    width: 80%;
+    background-color: #f3f3f3;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 20px 0;
+    height: 20px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #4caf50;
+    width: 0%;
+    transition: width 0.2s ease;
+}

@@ -20,6 +20,10 @@
             </form>
         </div>
 
+        <div class="progress-container" id="progress-container" style="display: none;">
+            <div id="progress-bar" class="progress-bar" style="width: 0%;"></div>
+        </div>
+
         <div class="form">
             {% if file_uploaded %}
             <form action="/submit" method="post">
@@ -58,5 +62,34 @@
             {% endif %}
         </div>
     </div>
+    <script>
+        function updateProgress() {
+            fetch('/progress')
+                .then(response => response.json())
+                .then(data => {
+                    const progressBar = document.getElementById('progress-bar');
+                    const progressContainer = document.getElementById('progress-container');
+
+                    if (data.progress > 0) {
+                        progressContainer.style.display = "block";
+                    }
+
+                    progressBar.style.width = data.progress + '%';
+
+                    if (data.progress < 100) {
+                        setTimeout(updateProgress, 500);
+                    } else {
+                    // Refresh the page when progress is complete
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000); // Add a short delay before refreshing
+                }
+                });
+        }
+        const form = document.querySelector("form[action='/submit']");
+        form.addEventListener("submit", function () {
+            updateProgress();
+        });
+    </script>
 </body>
 </html>
