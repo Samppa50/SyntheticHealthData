@@ -61,19 +61,26 @@ def generate_file(col_values, line_amount, epoch_amount, name):
     for col in non_numeric_cols:
         data[col] = data[col].astype('category').cat.codes
 
+    exclude_columns = []
     col_ignore_zero = []
     col_bool = []
 
-    for i in range(len(col_values)//2):
+    for i in range(len(col_values)//3):
         col_bool.append(col_values[i])
 
-    for i in range(len(col_values)//2, len(col_values)):
+    for i in range(len(col_values)//3, len(col_values)//3*2):
         col_ignore_zero.append(col_values[i])
+
+    for i in range(len(col_values)//3*2, len(col_values)):
+        exclude_columns.append(col_values[i])
+
+    print(f"col_bool: {col_bool}")
+    print(f"col_ignore_zero: {col_ignore_zero}")
+    print(f"exclude_columns: {exclude_columns}")
 
     ignore_zero = [col for col, flag in zip(data.columns, list(map(int, col_ignore_zero))) if flag == 1]
     data[ignore_zero] = data[ignore_zero].replace(0, np.nan)
     data = data.dropna(subset=ignore_zero)
-
 
     scaler = MinMaxScaler()
     data_scaled = scaler.fit_transform(data)
