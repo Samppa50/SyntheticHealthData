@@ -1,6 +1,6 @@
 from flask import Flask, render_template, url_for, request, redirect, send_from_directory
 from werkzeug.utils import secure_filename
-from synthetic import main, generate_file, get_progress
+from synthetic import main, generate_file, get_progress, update_progress
 import os
 import shutil
 
@@ -16,6 +16,9 @@ def index():
     global col_categories
     global file_name
     file_uploaded = bool(file_name)
+    progress = get_progress()
+    if progress == 100:
+        update_progress(0)  # Reset progress after completion
     return render_template("index.html", items=col_categories, file_uploaded=file_uploaded)
 
 @app.route("/progress")
@@ -98,7 +101,6 @@ def submit():
     global col_categories
     col_categories = []
     file_name = ""
-
 
     return redirect(f"/download/{output_file}")
 
