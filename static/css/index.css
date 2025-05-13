@@ -1,6 +1,6 @@
 body{
     margin: 0;
-    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-family: Arial, sans-serif;
 }
 
 .container{
@@ -102,4 +102,9 @@ body{
 .file-input{
 
 
+}
+
+.header {
+    text-align: center;
+    margin-top: 30vh;
 }

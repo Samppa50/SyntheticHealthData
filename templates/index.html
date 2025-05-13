@@ -7,13 +7,15 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>please upload your .csv file</h1>
-        </header>
+        <div class="header">
+            <header>
+                <h1>please upload your .csv/.xlsx file</h1>
+            </header>
+        </div>
 
         <div class="upload-form">
             <form action="/upload" method="post" enctype="multipart/form-data">
-                <input type="file" name="file" class="file-input">
+                <input type="file" name="file" accept=".csv, .xlsx" class="file-input">
                 <input type="submit" value="Upload" class="button">
             </form>
         </div>
