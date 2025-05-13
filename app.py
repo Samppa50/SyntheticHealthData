@@ -36,9 +36,10 @@ def upload_file():
             col_names = main(file.filename)
             col_categories = col_names  # Update the global list with new column names
 
-            global col_amount
-            col_amount = len(col_names)
+            #global col_amount
+            #col_amount = len(col_names)
             #tätä ehkä tarvitaan myöhemmin
+
             if file.filename.endswith('.xlsx'):
                 filename = os.path.splitext('Files/uploads/' + file.filename)[0]
                 file_name = filename + ".csv"
@@ -54,6 +55,7 @@ def upload_file():
 @app.route("/submit", methods=["GET", "POST"])
 def submit():
     global output_file
+    global file_name
 
     bool_values = request.form.to_dict(flat=False).get("bool_values", {})
     ignore_zero_values = request.form.to_dict(flat=False).get("ignore_zero_values", {})
@@ -61,6 +63,7 @@ def submit():
     epoch_amount = request.form.get("epoch-amount", default=100, type=int)
 
     print("lines wanted:", line_amount)
+
     col_values = []
 
     for i in range(len(bool_values)):
@@ -87,6 +90,12 @@ def submit():
     upload_folder = 'Files/uploads'
     if os.path.exists(os.path.join(upload_folder)):
         shutil.rmtree(upload_folder, ignore_errors=True)
+
+    #clearing the global variables
+    global col_categories
+    col_categories = []
+    file_name = ""
+
 
     return redirect(f"/download/{output_file}")
 
