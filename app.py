@@ -62,7 +62,7 @@ def submit():
     global output_file
     global file_name
 
-
+    exclude_columns = request.form.to_dict(flat=False).get("exclude_columns", {})
     bool_values = request.form.to_dict(flat=False).get("bool_values", {})
     ignore_zero_values = request.form.to_dict(flat=False).get("ignore_zero_values", {})
     line_amount = request.form.get("line-amount", default=100, type=int)
@@ -80,7 +80,10 @@ def submit():
         col_values.append((ignore_zero_values[times]))
         times += 1
     times = 0
-
+    for index in range(len(exclude_columns)* 2,len(exclude_columns) * 3):
+        col_values.append((exclude_columns[times]))
+        times += 1
+    times = 0
 
     # this is done because the index file always provides the off value but on value only when used.
     processed_col_values = []
