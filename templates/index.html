@@ -64,7 +64,7 @@
         </div>
     </div>
     <script>
-        let startTime = null; // Track when the progress starts
+        let startTime = null;
 
         function updateProgress() {
             fetch('/progress')
@@ -74,46 +74,40 @@
                     const progressContainer = document.getElementById('progress-container');
                     const etaElement = document.getElementById('eta');
 
-                    // Show the progress bar and ETA if progress is greater than 0
                     if (data.progress > 0) {
                         progressContainer.style.display = "block";
                         etaElement.style.display = "block";
 
-                        // Record the start time when progress begins
+
                         if (!startTime) {
                             startTime = Date.now();
                         }
                     }
 
-                    // Update the progress bar width
                     progressBar.style.width = data.progress + '%';
 
-                    // Calculate and display ETA
                     if (data.progress > 0 && data.progress < 100) {
-                        const elapsedTime = (Date.now() - startTime) / 1000; // Elapsed time in seconds
-                        const estimatedTotalTime = (elapsedTime / data.progress) * 100; // Total estimated time
-                        const remainingTime = Math.max(0, estimatedTotalTime - elapsedTime); // Remaining time in seconds
+                        const elapsedTime = (Date.now() - startTime) / 1000;
+                        const estimatedTotalTime = (elapsedTime / data.progress) * 100;
+                        const remainingTime = Math.max(0, estimatedTotalTime - elapsedTime);
 
-                        // Format remaining time as MM:SS
                         const minutes = Math.floor(remainingTime / 60);
                         const seconds = Math.floor(remainingTime % 60);
                         etaElement.textContent = `ETA: ${minutes}:${seconds.toString().padStart(2, '0')}`;
                     }
 
-                    // Continue updating until progress reaches 100
                     if (data.progress < 100) {
-                        setTimeout(updateProgress, 500); // Check progress every 500ms
+                        setTimeout(updateProgress, 500);
                     } else {
-                        // Hide ETA and refresh the page when progress is complete
+                        // hiding ETA and refresh the page when progress is complete. also the categories go away
                         etaElement.textContent = "Processing complete!";
                         setTimeout(() => {
                             window.location.reload();
-                        }, 1000); // Add a short delay before refreshing
+                        }, 1000); // adding a short delay before refreshing
                     }
                 });
         }
 
-        // Start tracking progress when the form is submitted
         const form = document.querySelector("form[action='/submit']");
         form.addEventListener("submit", function () {
             updateProgress();

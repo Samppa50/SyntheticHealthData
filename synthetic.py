@@ -42,7 +42,7 @@ def generate_file(col_values, line_amount, epoch_amount, name):
 
     df_decimal_source = pd.read_csv('Files/uploads/' + name, dtype=str)
 
-   
+
     #counts the decimals that are used in the synthetic data
 
     def count_decimals(value):
@@ -168,8 +168,8 @@ def generate_file(col_values, line_amount, epoch_amount, name):
     convert_bool = [col for col, flag in zip(data.columns, list(map(int,col_bool))) if flag == 1]
 
     synthetic_df[convert_bool] = synthetic_df[convert_bool].round().astype(bool)
-    
-    #Rounding the synthetic values with the right decimal amounts
+
+    # rounding the synthetic values with the right decimal amounts
     for col in synthetic_df.columns:
         if col in decimal_places:
             try:
@@ -179,6 +179,7 @@ def generate_file(col_values, line_amount, epoch_amount, name):
                 pass
 
 
+    # saving the synthetic file
     synthetic_name = "synthetic_"+name
     path = 'Files/downloads/'
     if not os.path.exists(path):
