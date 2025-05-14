@@ -5,4 +5,4 @@ tensorflow
 flask
 openpyxl
 seaborn
-matplotlib.pyplot
+matplotlib

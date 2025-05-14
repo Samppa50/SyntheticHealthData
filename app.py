@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for, request, redirect, send_from_directory, session
 from werkzeug.utils import secure_filename
 from synthetic import main, generate_file, get_progress, update_progress
+from Correlation_data import correlation
 import os
 import shutil
 import uuid
@@ -105,6 +106,7 @@ def download_file(output_file):
 @app.route('/review')
 def review():
     session_id = session.get('session_id', '')
-    return render_template("dataReview.html")
+    picture = correlation()
+    return render_template("dataReview.html", picture=picture)
 
 app.run(debug=True, port=5001, host='0.0.0.0')

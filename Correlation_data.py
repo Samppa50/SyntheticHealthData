@@ -2,12 +2,11 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder
-from synthetic import real_df, synthetic_df
 
 def correlation():
-    
-    df1 = pd.read_csv(real_df)
-    df2 = pd.read_csv(synthetic_df)
+
+    df1 = pd.read_csv('Files/uploads/diabetes2.csv')
+    df2 = pd.read_csv('Files/downloads/synthetic_diabetes2.csv')
 
     # Drop the first column (index column)
     df1 = df1.drop(df1.columns[0], axis=1)
@@ -22,6 +21,7 @@ def correlation():
     corr_matrix2 = df2.corr()
 
     # Plot the heatmaps
+    plt.show()
     plt.figure(figsize=(14, 6))
 
     plt.subplot(1, 2, 1)
@@ -33,5 +33,8 @@ def correlation():
     plt.title('Correlation Matrix: synthetic.csv')
 
     plt.tight_layout()
-    plt.savefig('correlation_matrix.png', dpi=300) #dpi will adjust image resolution
-    plt.show()
+    location = 'static/images/correlation_matrix.png'
+    plt.savefig(location, dpi=300)
+    plt.close()
+
+    return location
