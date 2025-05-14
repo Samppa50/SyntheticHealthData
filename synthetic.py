@@ -9,18 +9,18 @@ import openpyxl
 from scipy.stats import ttest_ind
 
 
-shared_state = {"progress": 0}
+progress_data = {'value': 0}
 
-def update_progress(value):
-    shared_state["progress"] = value
+def update_progress(session_id, value):
+    progress_data[session_id] = value
 
-def get_progress():
-    return shared_state["progress"]
+def get_progress(session_id):
+    return progress_data.get(session_id, 0)
 
-def main(name):
+def main(session_id ,name):
     # Load and preprocess the data
     if name.endswith('.xlsx'):
-        df = pd.read_excel('Files/uploads/' + name, engine=None)
+        df = pd.read_excel('Files/uploads/'+ session_id+ '/' + name, engine=None)
         filename = os.path.splitext('Files/uploads/' + name)[0]
         csv_name = filename + ".csv"
         df.to_csv(csv_name, index=False)
@@ -28,8 +28,7 @@ def main(name):
 
         data = pd.read_csv(csv_name)
     else:
-        data = pd.read_csv('Files/uploads/' + name)
-        
+        data = pd.read_csv('Files/uploads/'+ session_id+ '/' + name)
 
     #Converting non numeric values into numbers
     col_names = list(data.columns)
@@ -40,10 +39,10 @@ def main(name):
     return col_names
 
     #Generating the synthetic file
-def generate_file(col_values, line_amount, epoch_amount, name):
-    data = pd.read_csv('Files/uploads/' + name, encoding="ISO-8859-1", on_bad_lines='skip')
+def generate_file(col_values, line_amount, epoch_amount, name, session_id):
+    data = pd.read_csv('Files/uploads/'+ session_id+ '/' + name, encoding="ISO-8859-1", on_bad_lines='skip')
 
-    df_decimal_source = pd.read_csv('Files/uploads/' + name, dtype=str)
+    df_decimal_source = pd.read_csv('Files/uploads/'+ session_id+ '/' + name, dtype=str)
 
 
     #counts the decimals that are used in the synthetic data
@@ -168,7 +167,7 @@ def generate_file(col_values, line_amount, epoch_amount, name):
 
         # Update progress
         progress = (epoch + 1) / epochs * 100
-        update_progress(progress)
+        update_progress(session_id, progress)
 
         # Print progress
         if epoch % 1000 == 0:
@@ -212,7 +211,7 @@ def generate_file(col_values, line_amount, epoch_amount, name):
 
     # saving the synthetic file
     synthetic_name = "synthetic_"+name
-    path = 'Files/downloads/'
+    path = 'Files/downloads/'+ session_id + '/'
     if not os.path.exists(path):
         os.makedirs(path)
     synthetic_df.to_csv(os.path.join(path, synthetic_name), index=False)

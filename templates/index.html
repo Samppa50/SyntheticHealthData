@@ -26,7 +26,7 @@
         <p id="eta" style="text-align: center; font-size: 14px; margin-top: 10px; display: none;">ETA: Calculating...</p>
 
         <div class="form">
-            {% if file_uploaded %}
+            {% if items %}
             <form action="/submit" method="post">
                 <div class="category">
                     {% for item in items %}
