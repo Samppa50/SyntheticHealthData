@@ -41,6 +41,7 @@ def main(session_id ,name):
 
     #Generating the synthetic file
 def generate_file(col_values, line_amount, epoch_amount, name, session_id):
+    
     data = pd.read_csv('Files/uploads/'+ session_id+ '/' + name, encoding="ISO-8859-1", on_bad_lines='skip')
 
     df_decimal_source = pd.read_csv('Files/uploads/'+ session_id+ '/' + name, dtype=str, encoding="ISO-8859-1", on_bad_lines='skip')
@@ -80,6 +81,7 @@ def generate_file(col_values, line_amount, epoch_amount, name, session_id):
     print(f"col_bool: {col_bool}")
     print(f"col_ignore_zero: {col_ignore_zero}")
     print(f"exclude_columns: {exclude_columns}")
+
 
     mask = np.array(list(map(int, exclude_columns)))
     invert_mask =  1 -mask
@@ -187,12 +189,17 @@ def generate_file(col_values, line_amount, epoch_amount, name, session_id):
 
     synthetic_df[convert_bool] = synthetic_df[convert_bool].round().astype(bool)
 
-    # rounding the synthetic values with the right decimal amounts
+     #rounding the synthetic values with the right decimal amounts
     for col in synthetic_df.columns:
         if col in decimal_places:
             try:
                 decimals = int(decimal_places[col])
-                synthetic_df[col] = pd.to_numeric(synthetic_df[col], errors='coerce').round(decimals)
+                synthetic_df[col] = pd.to_numeric(synthetic_df[col], errors='coerce')
+                synthetic_df[col] = (
+                    synthetic_df[col].round(decimals).astype(int)
+                    if decimals == 0 else
+                    synthetic_df[col].round(decimals)
+                )
             except ValueError:
                 pass
 
