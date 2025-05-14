@@ -21,10 +21,11 @@ def main(session_id ,name):
     # Load and preprocess the data
     if name.endswith('.xlsx'):
         df = pd.read_excel('Files/uploads/'+ session_id+ '/' + name, engine=None)
-        filename = os.path.splitext('Files/uploads/' + name)[0]
+        filename = os.path.splitext('Files/uploads/' + session_id + '/' + name)[0]
         csv_name = filename + ".csv"
         df.to_csv(csv_name, index=False)
         name = os.path.basename(csv_name)
+        print(name)
 
         data = pd.read_csv(csv_name)
     else:

@@ -84,7 +84,10 @@ def submit():
     # hide blocks here
     session['col_categories'] = []
 
-    output_file = generate_file(processed_col_values, line_amount, epoch_amount, session['file_name'], session_id)
+    csv_filename = session['file_name']
+    csv_filename = os.path.splitext(csv_filename)[0] + ".csv"
+
+    output_file = generate_file(processed_col_values, line_amount, epoch_amount, csv_filename, session_id)
     session['output_file'] = output_file
 
     # removing the original file after processing
