@@ -6,6 +6,8 @@ from tensorflow.keras.optimizers import Adam
 from sklearn.preprocessing import MinMaxScaler
 import os
 import openpyxl
+from scipy.stats import ttest_ind
+
 
 shared_state = {"progress": 0}
 
@@ -73,6 +75,9 @@ def generate_file(col_values, line_amount, epoch_amount, name):
     ignore_zero = [col for col, flag in zip(data.columns, list(map(int, col_ignore_zero))) if flag == 1]
     data[ignore_zero] = data[ignore_zero].replace(0, np.nan)
     data = data.dropna(subset=ignore_zero)
+    
+    # Load the datasets
+    real_df = data
 
 
     scaler = MinMaxScaler()
@@ -177,6 +182,19 @@ def generate_file(col_values, line_amount, epoch_amount, name):
                 synthetic_df[col] = pd.to_numeric(synthetic_df[col], errors='coerce').round(decimals)
             except ValueError:
                 pass
+            
+    # Perform t-tests for each numeric column
+    synthetic_df_ttest = synthetic_df
+    
+    t_test_results = {}
+    for column in synthetic_df_ttest.columns:
+        if pd.api.types.is_numeric_dtype(synthetic_df_ttest[column]):
+            t_stat, p_value = ttest_ind(synthetic_df_ttest[column], real_df[column])
+            t_test_results[column] = {'t_statistic': t_stat, 'p_value': p_value}
+
+    # Display the results
+    for column, result in t_test_results.items():
+        print(f"{column}: t_statistic = {result['t_statistic']:.4f}, p_value = {result['p_value']:.4e}")
 
 
     # saving the synthetic file
