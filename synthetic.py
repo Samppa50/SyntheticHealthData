@@ -21,10 +21,11 @@ def main(session_id ,name):
     # Load and preprocess the data
     if name.endswith('.xlsx'):
         df = pd.read_excel('Files/uploads/'+ session_id+ '/' + name, engine=None)
-        filename = os.path.splitext('Files/uploads/' + name)[0]
+        filename = os.path.splitext('Files/uploads/' + session_id + '/' + name)[0]
         csv_name = filename + ".csv"
         df.to_csv(csv_name, index=False)
         name = os.path.basename(csv_name)
+        print(name)
 
         data = pd.read_csv(csv_name)
     else:
@@ -80,14 +81,12 @@ def generate_file(col_values, line_amount, epoch_amount, name, session_id):
     print(f"col_bool: {col_bool}")
     print(f"col_ignore_zero: {col_ignore_zero}")
     print(f"exclude_columns: {exclude_columns}")
-    
-    #mask = np.array(list(map(int, exclude_columns)))
-    #print(mask)
-    #invert_mask =  1 -mask
-    #print(invert_mask)
-   # keep_mask = invert_mask.astype(bool)
-    #print(keep_mask)
-    #data = data.iloc[:, keep_mask]
+
+
+    mask = np.array(list(map(int, exclude_columns)))
+    invert_mask =  1 -mask
+    keep_mask = invert_mask.astype(bool)
+    data = data.iloc[:, keep_mask]
 
     ignore_zero = [col for col, flag in zip(data.columns, list(map(int, col_ignore_zero))) if flag == 1]
     data[ignore_zero] = data[ignore_zero].replace(0, np.nan)
