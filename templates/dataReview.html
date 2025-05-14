@@ -1,10 +1,17 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Synthetic data generation</title>
+    <title>Synthetic Data Review</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dataReview.css') }}">
 </head>
 <body>
-    <H1>testing...</H1>
+    <h1>Correlation Matrix Review</h1>
+    {% if picture %}
+        <img src="{{ url_for('static', filename=picture.split('static/', 1)[1]) }}" alt="Correlation Matrix" class="plot-image"">
+    {% else %}
+        <p>No image available.</p>
+    {% endif %}
 </body>
+</html>
