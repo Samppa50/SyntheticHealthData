@@ -102,4 +102,9 @@ def download_file(output_file):
     session_id = session.get('session_id', '')
     return send_from_directory(f'Files/downloads/{session_id}', output_file, as_attachment=True)
 
+@app.route('/review')
+def review():
+    session_id = session.get('session_id', '')
+    return render_template("dataReview.html")
+
 app.run(debug=True, port=5001, host='0.0.0.0')
