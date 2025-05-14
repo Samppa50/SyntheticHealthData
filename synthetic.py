@@ -191,7 +191,12 @@ def generate_file(col_values, line_amount, epoch_amount, name, session_id):
         if col in decimal_places:
             try:
                 decimals = int(decimal_places[col])
-                synthetic_df[col] = pd.to_numeric(synthetic_df[col], errors='coerce').round(decimals)
+                synthetic_df[col] = pd.to_numeric(synthetic_df[col], errors='coerce')
+                synthetic_df[col] = (
+                    synthetic_df[col].round(decimals).astype(int)
+                    if decimals == 0 else
+                    synthetic_df[col].round(decimals)
+                )
             except ValueError:
                 pass
             
