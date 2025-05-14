@@ -37,8 +37,9 @@ def upload_file():
             file_path = os.path.join(upload_folder, secure_filename(file.filename))
             file.save(file_path)
 
-            session['file_name'] = file.filename
-            session['col_categories'] = main(session_id, file.filename)
+            sanitized_filename = secure_filename(file.filename.replace(" ", "_"))
+            session['file_name'] = sanitized_filename
+            session['col_categories'] = main(session_id, sanitized_filename)
 
             return redirect("/")
         else:
