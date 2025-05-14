@@ -41,7 +41,7 @@ def main(session_id ,name):
 
     #Generating the synthetic file
 def generate_file(col_values, line_amount, epoch_amount, name, session_id):
-    
+
     data = pd.read_csv('Files/uploads/'+ session_id+ '/' + name, encoding="ISO-8859-1", on_bad_lines='skip')
 
     df_decimal_source = pd.read_csv('Files/uploads/'+ session_id+ '/' + name, dtype=str, encoding="ISO-8859-1", on_bad_lines='skip')
@@ -55,6 +55,15 @@ def generate_file(col_values, line_amount, epoch_amount, name, session_id):
         return len(value.split('.')[-1])
 
     decimal_places = df_decimal_source.applymap(count_decimals).max()
+
+    # Store mappings for categorical columns
+    category_mappings = {}
+
+    non_numeric_cols = data.select_dtypes(include=['object', 'category']).columns
+    for col in non_numeric_cols:
+        data[col] = data[col].astype('category')
+        category_mappings[col] = dict(enumerate(data[col].cat.categories))
+        data[col] = data[col].cat.codes
 
 
     non_numeric_cols = data.select_dtypes(include=['object', 'category']).columns
@@ -187,7 +196,7 @@ def generate_file(col_values, line_amount, epoch_amount, name, session_id):
     # Modifing synthetic data into the desired form
     convert_bool = [col for col, flag in zip(data.columns, list(map(int,col_bool))) if flag == 1]
 
-    synthetic_df[convert_bool] = synthetic_df[convert_bool].round().astype(bool)
+    synthetic_df[convert_bool] = synthetic_df[convert_bool].round().astype(int)
 
      #rounding the synthetic values with the right decimal amounts
     for col in synthetic_df.columns:
@@ -202,6 +211,16 @@ def generate_file(col_values, line_amount, epoch_amount, name, session_id):
                 )
             except ValueError:
                 pass
+
+    # Convert numeric values back to original categorical values
+    for col, mapping in category_mappings.items():
+        print(f"{col}: {mapping}")
+        print(synthetic_df.head())
+        if col in synthetic_df.columns:
+            non_reversed_mapping = {k: v for k, v in mapping.items()}
+            synthetic_df[col] = synthetic_df[col].map(non_reversed_mapping)
+
+
 
     # Perform t-tests for each numeric column
     synthetic_df_ttest = synthetic_df
