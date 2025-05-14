@@ -1,56 +1,44 @@
-from flask import Flask, render_template, url_for, request, redirect, send_from_directory
+from flask import Flask, render_template, url_for, request, redirect, send_from_directory, session
 from werkzeug.utils import secure_filename
 from synthetic import main, generate_file, get_progress, update_progress
 import os
 import shutil
-
+import uuid
 
 app = Flask(__name__)
-
-output_file = "nan"
-col_categories = []
-file_name = ""
+app.secret_key = 'your_secret_key'  # Required for session management
 
 @app.route("/")
 def index():
-    global col_categories
-    global file_name
-    file_uploaded = bool(file_name)
-    progress = get_progress()
+    file_uploaded = 'file_name' in session
+    col_categories = session.get('col_categories', [])
+    progress = get_progress(session.get('session_id', ''))
     if progress == 100:
-        update_progress(0)  # reset progress if this has been used before
+        update_progress(session.get('session_id', ''), 0)  # Reset progress for this session
     return render_template("index.html", items=col_categories, file_uploaded=file_uploaded)
 
 @app.route("/progress")
 def get_progress_route():
-    return {"progress": get_progress()}
+    session_id = session.get('session_id', '')
+    return {"progress": get_progress(session_id)}
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload_file():
-    global col_categories
     if request.method == "POST":
         file = request.files['file']
         if file:
-            upload_folder = 'Files/uploads'
+            session_id = session.get('session_id', str(uuid.uuid4()))  # Generate a unique session ID
+            session['session_id'] = session_id
+
+            upload_folder = f'Files/uploads/{session_id}'
             if not os.path.exists(upload_folder):
                 os.makedirs(upload_folder)
 
-            file_path = os.path.join(upload_folder, secure_filename(file.filename)) # save the file to the upload folder
+            file_path = os.path.join(upload_folder, secure_filename(file.filename))
             file.save(file_path)
-            global file_name
-            file_name = file.filename
 
-            global col_names
-            col_names = main(file.filename)
-            col_categories = col_names
-
-
-            if file.filename.endswith('.xlsx'):
-                filename = os.path.splitext('Files/uploads/' + file.filename)[0]
-                file_name = filename + ".csv"
-                file_name = os.path.basename(file_name)
-
-
+            session['file_name'] = file.filename
+            session['col_categories'] = main(session_id, file.filename)
 
             return redirect("/")
         else:
@@ -59,8 +47,8 @@ def upload_file():
 
 @app.route("/submit", methods=["GET", "POST"])
 def submit():
-    global output_file
-    global file_name
+    session_id = session.get('session_id', str(uuid.uuid4()))
+    session['session_id'] = session_id
 
     exclude_columns = request.form.to_dict(flat=False).get("exclude_columns", {})
     bool_values = request.form.to_dict(flat=False).get("bool_values", {})
@@ -68,50 +56,46 @@ def submit():
     line_amount = request.form.get("line-amount", default=100, type=int)
     epoch_amount = request.form.get("epoch-amount", default=100, type=int)
 
-    print("lines wanted:", line_amount)
-
     col_values = []
-
     for i in range(len(bool_values)):
         col_values.append((bool_values[i]))
 
     times = 0
-    for index in range(len(ignore_zero_values),len(ignore_zero_values) * 2):
+    for index in range(len(ignore_zero_values), len(ignore_zero_values) * 2):
         col_values.append((ignore_zero_values[times]))
         times += 1
     times = 0
-    for index in range(len(exclude_columns)* 2,len(exclude_columns) * 3):
+    for index in range(len(exclude_columns) * 2, len(exclude_columns) * 3):
         col_values.append((exclude_columns[times]))
         times += 1
     times = 0
 
-    # this is done because the index file always provides the off value but on value only when used.
     processed_col_values = []
     for i in range(len(col_values)):
         if col_values[i] == "0" and i + 1 < len(col_values) and col_values[i + 1] == "1":
-            continue  # Skip the "off" if followed by "on"
+            continue
         processed_col_values.append(col_values[i])
 
-    print("Processed col_values:", processed_col_values)
+    output_folder = f'Files/downloads/{session_id}'
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
 
-    output_file = generate_file(processed_col_values, line_amount, epoch_amount ,file_name)
+    # hide blocks here
+    session['col_categories'] = []
+
+    output_file = generate_file(processed_col_values, line_amount, epoch_amount, session['file_name'], session_id)
+    session['output_file'] = output_file
 
     # removing the original file after processing
-    upload_folder = 'Files/uploads'
+    upload_folder = 'Files/uploads/' + session_id
     if os.path.exists(os.path.join(upload_folder)):
         shutil.rmtree(upload_folder, ignore_errors=True)
 
-    # clearing the global variables
-    global col_categories
-    col_categories = []
-    file_name = ""
-
     return redirect(f"/download/{output_file}")
 
-
-
-@app.route(f'/download/<output_file>')
+@app.route('/download/<output_file>')
 def download_file(output_file):
-    return send_from_directory('Files/downloads', output_file, as_attachment=True)
+    session_id = session.get('session_id', '')
+    return send_from_directory(f'Files/downloads/{session_id}', output_file, as_attachment=True)
 
 app.run(debug=True, port=5001, host='0.0.0.0')
