@@ -79,6 +79,11 @@ def generate_file(col_values, line_amount, epoch_amount, name, session_id):
     print(f"col_bool: {col_bool}")
     print(f"col_ignore_zero: {col_ignore_zero}")
     print(f"exclude_columns: {exclude_columns}")
+    
+    mask = np.array(list(map(int, exclude_columns)))
+    invert_mask =  1 -mask
+    keep_mask = invert_mask.astype(bool)
+    data = data.iloc[:, keep_mask]
 
     ignore_zero = [col for col, flag in zip(data.columns, list(map(int, col_ignore_zero))) if flag == 1]
     data[ignore_zero] = data[ignore_zero].replace(0, np.nan)
