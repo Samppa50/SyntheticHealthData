@@ -43,24 +43,30 @@ body{
 }
 
 .category-block {
-    min-width: 60%;
-    width: 60%; /* Set the width to 60% of the screen */
-    height: 12vh; /* Set the height to 10% of the viewport height */
-    margin: 10px auto; /* Center the block horizontally and add spacing */
-    border: 1px solid #ccc; /* Optional: Add a border for better visibility */
-    display: flex; /* Use flexbox for layout */
-    flex-direction: column; /* Stack the title and options vertically */
-    justify-content: center; /* Center content vertically */
-    align-items: center; /* Center content horizontally */
-    padding: 10px; /* Add some padding */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for better aesthetics */
+    display: flex; /* Use flexbox for horizontal alignment */
+    justify-content: space-between; /* Add space between <h2> and .options */
+    align-items: center; /* Vertically align items */
+    width: 60%; /* Ensure the block takes up the full width */
+    padding: 10px; /* Add padding for spacing */
+    margin: 10px 0; /* Add vertical spacing between blocks */
+    border: 1px solid #ccc; /* Optional: Add a border for visibility */
     border-radius: 8px; /* Optional: Add rounded corners */
+    background-color: #f9f9f9; /* Optional: Add a background color */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for better aesthetics */
+}
+
+.category-block h2 {
+    max-width: 33%; /* Set a width for the <h2> element */
+    margin: 0; /* Remove default margin */
+    font-size: 18px; /* Adjust font size if needed */
+    /* flex-shrink: 0; Prevent the <h2> from shrinking */
 }
 
 .options {
-    display: flex; /* Use flexbox for the checkboxes */
-    justify-content: center; /* Center the checkboxes horizontally */
-    gap: 20px; /* Add spacing between the checkboxes */
+    display: flex; /* Use flexbox for horizontal alignment of <ul> elements */
+    gap: 20px; /* Add spacing between the <ul> elements */
+    flex-wrap: wrap; /* Allow items to wrap to the next line if needed */
+    justify-content: flex-start; /* Align items to the left */
 }
 
 .options ul {
@@ -130,3 +136,29 @@ body{
     width: 0%;
     transition: width 0.2s ease;
 }
+
+.category {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /* Stack children vertically */
+    gap: 2px; /* Add spacing between divs */
+}
+
+.options-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /* Stack children vertically */
+    gap: 2px; /* Add spacing between divs */
+}
+
+.options-checkbox {
+/* this hides default checkbox */
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
