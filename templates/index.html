@@ -36,17 +36,20 @@
                             <ul>
                                 <p class="options-text">exclude column</p>
                                 <input type="hidden" name="exclude_columns" value=0>
-                                <input class="options-checkbox" type="checkbox" name="exclude_columns" value=1>
+                                <input class="options-checkbox" type="checkbox" name="exclude_columns" value=1 id="exclude-column-{{ loop.index }}">
+                                <label for="exclude-column-{{ loop.index }}"></label>
                             </ul>
                             <ul>
                                 <p class="options-text">bool</p>
                                 <input type="hidden" name="bool_values" value=0>
-                                <input class="options-checkbox" type="checkbox" name="bool_values" value=1>
+                                <input class="options-checkbox" type="checkbox" name="bool_values" value=1 id="bool-{{ loop.index }}">
+                                <label for="bool-{{ loop.index }}"></label>
                             </ul>
                             <ul>
                                 <p class="options-text">ignore zero</p>
                                 <input type="hidden" name="ignore_zero_values" value=0>
-                                <input class="options-checkbox" type="checkbox" name="ignore_zero_values" value=1>
+                                <input class="options-checkbox" type="checkbox" name="ignore_zero_values" value=1 id="ignore-zero-{{ loop.index }}">
+                                <label for="ignore-zero-{{ loop.index }}"></label>
                             </ul>
                         </div>
                     </div>

@@ -155,10 +155,35 @@ body{
 
 .options-checkbox {
 /* this hides default checkbox */
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-  height: 0;
-  width: 0;
+    display: none;
 }
 
+/* Style the custom checkbox */
+.options-checkbox + label {
+    display: inline-block;
+    width: 24px; /* Set the size of the checkbox */
+    height: 24px; /* Set the size of the checkbox */
+    border: 2px solid #4caf50; /* Green border */
+    border-radius: 4px; /* Optional: Add rounded corners */
+    background-color: white; /* Background color */
+    cursor: pointer; /* Change cursor to pointer */
+    position: relative;
+}
+
+/* Add a checkmark when the checkbox is checked */
+.options-checkbox:checked + label::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 8px;
+    width: 6px;
+    height: 12px;
+    border: solid #4caf50; /* Green checkmark */
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* Optional: Add hover effect */
+.options-checkbox + label:hover {
+    background-color: #e8f5e9; /* Light green background on hover */
+}
