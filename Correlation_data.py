@@ -4,11 +4,16 @@ import matplotlib
 matplotlib.use('Agg')  # Use a non-interactive backend for matplotlib
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder
+from synthetic import get_df1, get_df2
+
 
 def correlation(new_file, original_file, session_id):
 
-    df1 = pd.read_csv('Files/uploads/' + session_id + '/' + original_file)
-    df2 = pd.read_csv('Files/downloads/' + session_id + '/' + new_file)
+    df1 = get_df1(session_id, original_file)
+    df2 = get_df2(session_id)
+
+    #df1 = pd.read_csv('Files/uploads/' + session_id + '/' + original_file)
+    #df2 = pd.read_csv('Files/downloads/' + session_id + '/' + new_file)
 
     # Drop the first column (index column)
     df1 = df1.drop(df1.columns[0], axis=1)

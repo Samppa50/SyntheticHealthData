@@ -5,9 +5,19 @@ from Correlation_data import correlation
 import os
 import shutil
 import uuid
+from flask_session import Session
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Required for session management
+
+# Configure server-side session storage
+app.config['SESSION_TYPE'] = 'filesystem'  # Store session data in the filesystem
+app.config['SESSION_FILE_DIR'] = './flask_session/'  # Directory to store session files
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_USE_SIGNER'] = True
+app.config['SECRET_KEY'] = 'your_secret_key'  # Required for signing session data
+
+# Initialize Flask-Session
+Session(app)
 
 @app.route("/")
 def index():
