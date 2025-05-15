@@ -4,6 +4,7 @@ body{
 }
 
 .container{
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -12,9 +13,16 @@ body{
 }
 
 /* Optional: Style individual divs */
-.upload-form,
-.form {
+.upload-form {
     display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto; /* Center the divs horizontally */
+}
+
+.form {
+    display: block;
+    width: 80%; /* Set a width for the divs */
     justify-content: center;
     align-items: center;
     width: 100%; /* Ensure divs take full width */
@@ -35,8 +43,9 @@ body{
 }
 
 .category-block {
+    min-width: 60%;
     width: 60%; /* Set the width to 60% of the screen */
-    height: 10vh; /* Set the height to 10% of the viewport height */
+    height: 12vh; /* Set the height to 10% of the viewport height */
     margin: 10px auto; /* Center the block horizontally and add spacing */
     border: 1px solid #ccc; /* Optional: Add a border for better visibility */
     display: flex; /* Use flexbox for layout */
@@ -79,6 +88,7 @@ body{
     background-color: #f9f9f9; /* Optional: Add a background color */
     width: 100%; /* Ensure consistent block size */
     box-sizing: border-box; /* Include padding and border in width */
+    flex-direction: column;
 }
 
 .input-field {
