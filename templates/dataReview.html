@@ -20,7 +20,7 @@
             <p>if the download didn't start</p>
             <a href="{{ url_for('download_file', output_file=session['output_file']) }}" class="button">Download File</a>
             <p>this removes all your files from server</p>
-            <button class="button">Nuke everything...</button>
+            <a href="{{ url_for('delete') }}" class="button">Nuke Files</a>
         </div>
     </div>
     <script>

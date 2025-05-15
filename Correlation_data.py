@@ -5,6 +5,7 @@ matplotlib.use('Agg')  # Use a non-interactive backend for matplotlib
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder
 from synthetic import get_df1, get_df2
+import os
 
 
 def correlation(new_file, original_file, session_id):
@@ -39,7 +40,10 @@ def correlation(new_file, original_file, session_id):
     plt.title('Correlation Matrix: synthetic.csv')
 
     plt.tight_layout()
-    location = 'static/images/correlation_matrix.png'
+    folder = 'static/images/' + session_id
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+    location = 'static/images/'+session_id+'/correlation_matrix.png'
     plt.savefig(location, dpi=80)
     plt.close()
 

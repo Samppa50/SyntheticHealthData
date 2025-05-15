@@ -122,4 +122,26 @@ def review():
     picture = correlation(output_file, original_file, session_id)
     return render_template("dataReview.html", picture=picture, session_id=session_id)
 
+@app.route('/delete')
+def delete():
+    session_id = session.get('session_id', '')
+    if session_id:
+        upload_folder = f'Files/uploads/{session_id}'
+        if os.path.exists(upload_folder):
+            shutil.rmtree(upload_folder, ignore_errors=True)
+
+        output_folder = f'Files/downloads/{session_id}'
+        if os.path.exists(output_folder):
+            shutil.rmtree(output_folder, ignore_errors=True)
+
+        image_folder = f'static/images/{session_id}'
+        if os.path.exists(image_folder):
+            for filename in os.listdir(image_folder):
+                file_path = os.path.join(image_folder, filename)
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
+
+        session.clear()
+    return redirect("/")
+
 app.run(debug=True, port=5001, host='0.0.0.0')
