@@ -211,6 +211,7 @@ def generate_file(col_values, line_amount, epoch_amount, name, session_id):
             except ValueError:
                 pass
 
+    testsynt = synthetic_df
     # Convert numeric values back to original categorical values
     for col, mapping in category_mappings.items():
         print(f"{col}: {mapping}")
@@ -233,7 +234,7 @@ def generate_file(col_values, line_amount, epoch_amount, name, session_id):
     # Display the results
     for column, result in t_test_results.items():
         print(f"{column}: t_statistic = {result['t_statistic']:.4f}, p_value = {result['p_value']:.4e}")
-        
+
 
 
     # saving the synthetic file

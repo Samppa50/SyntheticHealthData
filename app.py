@@ -92,9 +92,9 @@ def submit():
     session['output_file'] = output_file
 
     # removing the original file after processing
-    upload_folder = 'Files/uploads/' + session_id
-    if os.path.exists(os.path.join(upload_folder)):
-        shutil.rmtree(upload_folder, ignore_errors=True)
+    #upload_folder = 'Files/uploads/' + session_id
+    #if os.path.exists(os.path.join(upload_folder)):
+    #    shutil.rmtree(upload_folder, ignore_errors=True)
 
     return redirect(url_for('review'))
     #return redirect(f"/download/{output_file}")
@@ -107,7 +107,9 @@ def download_file(output_file):
 @app.route('/review')
 def review():
     session_id = session.get('session_id', '')
-    picture = correlation()
-    return render_template("dataReview.html", picture=picture)
+    output_file = session.get('output_file', '')
+    original_file = session.get('file_name', '')
+    picture = correlation(output_file, original_file, session_id)
+    return render_template("dataReview.html", picture=picture, session_id=session_id)
 
 app.run(debug=True, port=5001, host='0.0.0.0')
