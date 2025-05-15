@@ -106,9 +106,6 @@
                     } else {
                         // hiding ETA and refresh the page when progress is complete. also the categories go away
                         etaElement.textContent = "Processing complete!";
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1000); // adding a short delay before refreshing
                     }
                 });
         }

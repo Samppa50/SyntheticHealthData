@@ -34,40 +34,40 @@ body{
     cursor: pointer;
 }
 
-/* Wrapper for the category blocks */
-.category {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4 columns */
-    gap: 20px; /* Spacing between blocks */
-    margin: 20px auto;
-}
-
 .category-block {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 15px;
-    text-align: center;
-    background-color: #f9f9f9;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    min-width: 200px; /* Ensure consistent block size */
-    box-sizing: border-box; /* Include padding and border in width */
+    width: 60%; /* Set the width to 60% of the screen */
+    height: 10vh; /* Set the height to 10% of the viewport height */
+    margin: 10px auto; /* Center the block horizontally and add spacing */
+    border: 1px solid #ccc; /* Optional: Add a border for better visibility */
+    display: flex; /* Use flexbox for layout */
+    flex-direction: column; /* Stack the title and options vertically */
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+    padding: 10px; /* Add some padding */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for better aesthetics */
+    border-radius: 8px; /* Optional: Add rounded corners */
 }
 
-.category-block h2 {
-    margin-bottom: 10px;
-    font-size: 18px;
+.options {
+    display: flex; /* Use flexbox for the checkboxes */
+    justify-content: center; /* Center the checkboxes horizontally */
+    gap: 20px; /* Add spacing between the checkboxes */
 }
 
 .options ul {
-    list-style: none;
+    list-style: none; /* Remove bullet points */
+    margin: 0;
     padding: 0;
-    margin: 10px 0;
+    display: flex; /* Use flexbox for the label and checkbox */
+    align-items: center; /* Align items vertically */
+    gap: 5px; /* Add spacing between the label and checkbox */
 }
 
 .options p {
-    margin: 0;
-    font-weight: bold;
+    margin: 0; /* Remove default margin from the paragraph */
+    font-size: 14px; /* Adjust font size if needed */
 }
+
 
 /* Style for individual category blocks */
 .category h2 {
