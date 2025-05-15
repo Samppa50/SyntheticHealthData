@@ -13,13 +13,6 @@ def correlation(new_file, original_file, session_id):
     df1 = get_df1(session_id, original_file)
     df2 = get_df2(session_id)
 
-    #df1 = pd.read_csv('Files/uploads/' + session_id + '/' + original_file)
-    #df2 = pd.read_csv('Files/downloads/' + session_id + '/' + new_file)
-
-    # Drop the first column (index column)
-    df1 = df1.drop(df1.columns[0], axis=1)
-    df2 = df2.drop(df2.columns[0], axis=1)
-
     # Fill missing values with the mean of each column
     df1 = df1.fillna(df1.mean())
     df2 = df2.fillna(df2.mean())
