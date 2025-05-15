@@ -1,12 +1,20 @@
 import pandas as pd
 import seaborn as sns
+import matplotlib
+matplotlib.use('Agg')  # Use a non-interactive backend for matplotlib
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder
+from synthetic import get_df1, get_df2
+import os
 
-def correlation():
 
-    df1 = pd.read_csv('Files/uploads/diabetes2.csv')
-    df2 = pd.read_csv('Files/downloads/synthetic_diabetes2.csv')
+def correlation(new_file, original_file, session_id):
+
+    df1 = get_df1(session_id, original_file)
+    df2 = get_df2(session_id)
+
+    #df1 = pd.read_csv('Files/uploads/' + session_id + '/' + original_file)
+    #df2 = pd.read_csv('Files/downloads/' + session_id + '/' + new_file)
 
     # Drop the first column (index column)
     df1 = df1.drop(df1.columns[0], axis=1)
@@ -21,7 +29,6 @@ def correlation():
     corr_matrix2 = df2.corr()
 
     # Plot the heatmaps
-    plt.show()
     plt.figure(figsize=(14, 6))
 
     plt.subplot(1, 2, 1)
@@ -33,8 +40,11 @@ def correlation():
     plt.title('Correlation Matrix: synthetic.csv')
 
     plt.tight_layout()
-    location = 'static/images/correlation_matrix.png'
-    plt.savefig(location, dpi=300)
+    folder = 'static/images/' + session_id
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+    location = 'static/images/'+session_id+'/correlation_matrix.png'
+    plt.savefig(location, dpi=80)
     plt.close()
 
     return location

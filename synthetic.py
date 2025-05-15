@@ -7,6 +7,8 @@ from sklearn.preprocessing import MinMaxScaler
 import os
 import openpyxl
 from scipy.stats import ttest_ind
+import pickle
+from flask import session
 
 progress_data = {'value': 0}
 
@@ -15,6 +17,27 @@ def update_progress(session_id, value):
 
 def get_progress(session_id):
     return progress_data.get(session_id, 0)
+
+def get_df1(session_id, name):
+    data = pd.read_csv('Files/uploads/'+ session_id+ '/' + name, encoding="ISO-8859-1", on_bad_lines='skip')
+    for col in data.columns:
+        non_numeric_cols = data.select_dtypes(include=['object', 'category']).columns
+    for col in non_numeric_cols:
+        data[col] = data[col].astype('category').cat.codes
+    return data
+
+def set_df2(dataframe, session_id):
+    """Serialize and store df2 in the session."""
+    print(f"Setting df2 for session_id: {session_id}")
+    session[f'df2_{session_id}'] = pickle.dumps(dataframe)
+
+def get_df2(session_id):
+    """Retrieve and deserialize df2 from the session."""
+    pickled_df2 = session.get(f'df2_{session_id}')
+    if pickled_df2 is None:
+        raise ValueError("df2 has not been set for this session.")
+    return pickle.loads(pickled_df2)
+
 
 def main(session_id ,name):
     # Load and preprocess the data
@@ -45,7 +68,7 @@ def generate_file(col_values, line_amount, epoch_amount, name, session_id):
 
     df_decimal_source = pd.read_csv('Files/uploads/'+ session_id+ '/' + name, dtype=str, encoding="ISO-8859-1", on_bad_lines='skip')
 
-
+    testsyntorg = data
     #counts the decimals that are used in the synthetic data
 
     def count_decimals(value):
@@ -211,6 +234,9 @@ def generate_file(col_values, line_amount, epoch_amount, name, session_id):
             except ValueError:
                 pass
 
+    # Save the synthetic DataFrame to df2
+    set_df2(synthetic_df, session_id)
+
     # Convert numeric values back to original categorical values
     for col, mapping in category_mappings.items():
         print(f"{col}: {mapping}")
@@ -224,6 +250,7 @@ def generate_file(col_values, line_amount, epoch_amount, name, session_id):
     # Perform t-tests for each numeric column
     synthetic_df_ttest = synthetic_df
 
+
     t_test_results = {}
     for column in synthetic_df_ttest.columns:
         if pd.api.types.is_numeric_dtype(synthetic_df_ttest[column]):
@@ -233,7 +260,7 @@ def generate_file(col_values, line_amount, epoch_amount, name, session_id):
     # Display the results
     for column, result in t_test_results.items():
         print(f"{column}: t_statistic = {result['t_statistic']:.4f}, p_value = {result['p_value']:.4e}")
-        
+
 
 
     # saving the synthetic file

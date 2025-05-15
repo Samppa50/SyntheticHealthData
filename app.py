@@ -5,9 +5,19 @@ from Correlation_data import correlation
 import os
 import shutil
 import uuid
+from flask_session import Session
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Required for session management
+
+# Configure server-side session storage
+app.config['SESSION_TYPE'] = 'filesystem'  # Store session data in the filesystem
+app.config['SESSION_FILE_DIR'] = './flask_session/'  # Directory to store session files
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_USE_SIGNER'] = True
+app.config['SECRET_KEY'] = 'your_secret_key'  # Required for signing session data
+
+# Initialize Flask-Session
+Session(app)
 
 @app.route("/")
 def index():
@@ -92,11 +102,12 @@ def submit():
     session['output_file'] = output_file
 
     # removing the original file after processing
-    upload_folder = 'Files/uploads/' + session_id
-    if os.path.exists(os.path.join(upload_folder)):
-        shutil.rmtree(upload_folder, ignore_errors=True)
+    #upload_folder = 'Files/uploads/' + session_id
+    #if os.path.exists(os.path.join(upload_folder)):
+    #    shutil.rmtree(upload_folder, ignore_errors=True)
 
-    return redirect(f"/download/{output_file}")
+    return redirect(url_for('review'))
+    #return redirect(f"/download/{output_file}")
 
 @app.route('/download/<output_file>')
 def download_file(output_file):
@@ -106,7 +117,31 @@ def download_file(output_file):
 @app.route('/review')
 def review():
     session_id = session.get('session_id', '')
-    picture = correlation()
-    return render_template("dataReview.html", picture=picture)
+    output_file = session.get('output_file', '')
+    original_file = session.get('file_name', '')
+    picture = correlation(output_file, original_file, session_id)
+    return render_template("dataReview.html", picture=picture, session_id=session_id)
+
+@app.route('/delete')
+def delete():
+    session_id = session.get('session_id', '')
+    if session_id:
+        upload_folder = f'Files/uploads/{session_id}'
+        if os.path.exists(upload_folder):
+            shutil.rmtree(upload_folder, ignore_errors=True)
+
+        output_folder = f'Files/downloads/{session_id}'
+        if os.path.exists(output_folder):
+            shutil.rmtree(output_folder, ignore_errors=True)
+
+        image_folder = f'static/images/{session_id}'
+        if os.path.exists(image_folder):
+            for filename in os.listdir(image_folder):
+                file_path = os.path.join(image_folder, filename)
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
+
+        session.clear()
+    return redirect("/")
 
 app.run(debug=True, port=5001, host='0.0.0.0')
