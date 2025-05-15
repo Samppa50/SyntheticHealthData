@@ -35,7 +35,7 @@ def correlation():
 
     plt.tight_layout()
     location = 'static/images/correlation_matrix.png'
-    plt.savefig(location, dpi=300)
+    plt.savefig(location, dpi=80)
     plt.close()
 
     return location

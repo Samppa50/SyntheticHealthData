@@ -96,7 +96,8 @@ def submit():
     if os.path.exists(os.path.join(upload_folder)):
         shutil.rmtree(upload_folder, ignore_errors=True)
 
-    return redirect(f"/download/{output_file}")
+    return redirect(url_for('review'))
+    #return redirect(f"/download/{output_file}")
 
 @app.route('/download/<output_file>')
 def download_file(output_file):
