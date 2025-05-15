@@ -113,6 +113,16 @@ def generate_file(col_values, line_amount, epoch_amount, name, session_id):
     print(f"col_ignore_zero: {col_ignore_zero}")
     print(f"exclude_columns: {exclude_columns}")
 
+    exclude_columns = np.array(list(map(int, exclude_columns)))
+    col_ignore_zero = np.array(list(map(int, col_ignore_zero)))
+    col_bool = np.array(list(map(int, col_bool)))
+
+    col_ignore_zero = col_ignore_zero[exclude_columns == 0]
+    col_bool = col_bool[exclude_columns == 0]
+
+    print(f"col_bool: {col_bool}")
+    print(f"col_ignore_zero: {col_ignore_zero}")
+    print(f"exclude_columns: {exclude_columns}")
 
     mask = np.array(list(map(int, exclude_columns)))
     invert_mask =  1 -mask
