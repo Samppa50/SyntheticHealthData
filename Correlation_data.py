@@ -1,5 +1,7 @@
 import pandas as pd
 import seaborn as sns
+import matplotlib
+matplotlib.use('Agg')  # Use a non-interactive backend for matplotlib
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder
 
@@ -21,7 +23,6 @@ def correlation():
     corr_matrix2 = df2.corr()
 
     # Plot the heatmaps
-    plt.show()
     plt.figure(figsize=(14, 6))
 
     plt.subplot(1, 2, 1)
