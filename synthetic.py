@@ -12,19 +12,24 @@ from flask import session
 
 progress_data = {'value': 0}
 
+
 def update_progress(session_id, value):
     progress_data[session_id] = value
 
 def get_progress(session_id):
     return progress_data.get(session_id, 0)
 
-def get_df1(session_id, name):
-    data = pd.read_csv('Files/uploads/'+ session_id+ '/' + name, encoding="ISO-8859-1", on_bad_lines='skip')
-    for col in data.columns:
-        non_numeric_cols = data.select_dtypes(include=['object', 'category']).columns
-    for col in non_numeric_cols:
-        data[col] = data[col].astype('category').cat.codes
-    return data
+def set_df1(dataframe, session_id):
+    """Serialize and store df1 in the session."""
+    print(f"Setting df1 for session_id: {session_id}")
+    session[f'df1_{session_id}'] = pickle.dumps(dataframe)
+
+def get_df1(session_id):
+    """Retrieve and deserialize df1 from the session."""
+    pickled_df1 = session.get(f'df1_{session_id}')
+    if pickled_df1 is None:
+        raise ValueError("df1 has not been set for this session.")
+    return pickle.loads(pickled_df1)
 
 def set_df2(dataframe, session_id):
     """Serialize and store df2 in the session."""
@@ -135,7 +140,9 @@ def generate_file(col_values, line_amount, epoch_amount, name, session_id):
 
     # Load the datasets
     real_df = data
-
+    
+    set_df1(data, session_id)
+    
     scaler = MinMaxScaler()
     data_scaled = scaler.fit_transform(data)
 

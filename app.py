@@ -117,9 +117,7 @@ def download_file(output_file):
 @app.route('/review')
 def review():
     session_id = session.get('session_id', '')
-    output_file = session.get('output_file', '')
-    original_file = session.get('file_name', '')
-    picture = correlation(output_file, original_file, session_id)
+    picture = correlation(session_id)
     return render_template("dataReview.html", picture=picture, session_id=session_id)
 
 @app.route('/delete')
