@@ -57,6 +57,7 @@ def main(session_id ,name):
         data = pd.read_csv(csv_name)
     else:
         data = pd.read_csv('Files/uploads/'+ session_id+ '/' + name)
+        
 
     #Converting non numeric values into numbers
     col_names = list(data.columns)
@@ -68,9 +69,10 @@ def main(session_id ,name):
 
     #Generating the synthetic file
 def generate_file(col_values, line_amount, epoch_amount, name, session_id):
+    
 
     data = pd.read_csv('Files/uploads/'+ session_id+ '/' + name, encoding="ISO-8859-1", on_bad_lines='skip')
-
+    
     df_decimal_source = pd.read_csv('Files/uploads/'+ session_id+ '/' + name, dtype=str, encoding="ISO-8859-1", on_bad_lines='skip')
 
     testsyntorg = data
@@ -137,7 +139,10 @@ def generate_file(col_values, line_amount, epoch_amount, name, session_id):
     ignore_zero = [col for col, flag in zip(data.columns, list(map(int, col_ignore_zero))) if flag == 1]
     data[ignore_zero] = data[ignore_zero].replace(0, np.nan)
     data = data.dropna(subset=ignore_zero)
-
+ 
+    data.replace(r'^\s*$', np.nan, regex=True, inplace=True)
+    data.fillna(0, inplace=True)
+    
     # Load the datasets
     real_df = data
     
