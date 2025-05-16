@@ -41,3 +41,24 @@ def correlation(session_id):
     plt.close()
 
     return location
+
+def median_mean(session_id):
+    df1 = get_df1(session_id)
+    df2 = get_df2(session_id)
+
+    # Fill missing values with the mean of each column
+    df1 = df1.fillna(df1.mean())
+    df2 = df2.fillna(df2.mean())
+
+    # Compute the median and mean for each column
+    median_mean_df1 = pd.DataFrame({
+        'Median': df1.median().round(3),
+        'Mean': df1.mean().round(3)
+    })
+
+    median_mean_df2 = pd.DataFrame({
+        'Median': df2.median().round(3),
+        'Mean': df2.mean().round(3)
+    })
+
+    return median_mean_df1, median_mean_df2

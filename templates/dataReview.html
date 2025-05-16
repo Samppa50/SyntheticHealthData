@@ -16,6 +16,24 @@
                 <p>No image available.</p>
             {% endif %}
         </div>
+        <div class="inner-comparison-container">
+                <h1>Median And Mean Review</h1>
+                <p>these values are rounded to 3 decimals</p>
+            </div>
+        <div class="comparison-container">
+            <div class="inner-comparison-container">
+                <h2>original file</h2>
+                {% for col, stats in median_mean_df1.items() %}
+                    <p>{{ col }} - Median: {{ stats['Median'] }}, Mean: {{ stats['Mean'] }}</p>
+                {% endfor %}
+            </div>
+            <div class="inner-comparison-container">
+                <h2>synthetic file</h2>
+                {% for col, stats in median_mean_df2.items() %}
+                    <p>{{ col }} - Median: {{ stats['Median'] }}, Mean: {{ stats['Mean'] }}</p>
+                {% endfor %}
+            </div>
+        </div>
         <div class="container">
             <p>if the download didn't start</p>
             <a href="{{ url_for('download_file', output_file=session['output_file']) }}" class="button">Download File</a>
