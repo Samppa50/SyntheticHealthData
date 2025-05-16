@@ -101,13 +101,9 @@ def submit():
     output_file = generate_file(processed_col_values, line_amount, epoch_amount, csv_filename, session_id)
     session['output_file'] = output_file
 
-    # removing the original file after processing
-    #upload_folder = 'Files/uploads/' + session_id
-    #if os.path.exists(os.path.join(upload_folder)):
-    #    shutil.rmtree(upload_folder, ignore_errors=True)
 
     return redirect(url_for('review'))
-    #return redirect(f"/download/{output_file}")
+
 
 @app.route('/download/<output_file>')
 def download_file(output_file):

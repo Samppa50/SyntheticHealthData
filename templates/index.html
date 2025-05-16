@@ -34,19 +34,22 @@
                         <h2>{{ item }}</h2>
                         <div class="options">
                             <ul>
-                                <p>exculde column</p>
+                                <p class="options-text">exclude column</p>
                                 <input type="hidden" name="exclude_columns" value=0>
-                                <input type="checkbox" name="exclude_columns" value=1>
+                                <input class="options-checkbox" type="checkbox" name="exclude_columns" value=1 id="exclude-column-{{ loop.index }}">
+                                <label for="exclude-column-{{ loop.index }}"></label>
                             </ul>
                             <ul>
-                                <p>bool</p>
+                                <p class="options-text">bool</p>
                                 <input type="hidden" name="bool_values" value=0>
-                                <input type="checkbox" name="bool_values" value=1>
+                                <input class="options-checkbox" type="checkbox" name="bool_values" value=1 id="bool-{{ loop.index }}">
+                                <label for="bool-{{ loop.index }}"></label>
                             </ul>
                             <ul>
-                                <p>ignore zero</p>
+                                <p class="options-text">ignore zero</p>
                                 <input type="hidden" name="ignore_zero_values" value=0>
-                                <input type="checkbox" name="ignore_zero_values" value=1>
+                                <input class="options-checkbox" type="checkbox" name="ignore_zero_values" value=1 id="ignore-zero-{{ loop.index }}">
+                                <label for="ignore-zero-{{ loop.index }}"></label>
                             </ul>
                         </div>
                     </div>
@@ -106,9 +109,6 @@
                     } else {
                         // hiding ETA and refresh the page when progress is complete. also the categories go away
                         etaElement.textContent = "Processing complete!";
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1000); // adding a short delay before refreshing
                     }
                 });
         }
