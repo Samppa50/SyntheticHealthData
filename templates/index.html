@@ -115,6 +115,7 @@
 
         const form = document.querySelector("form[action='/submit']");
         form.addEventListener("submit", function () {
+            window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
             updateProgress();
         });
     </script>
