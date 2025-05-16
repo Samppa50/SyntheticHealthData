@@ -47,7 +47,7 @@ def cleanup_old_sessions():
                         print(f"Deleted old session folder: {session_path}")
                     except Exception as e:
                         print(f"Error deleting {session_path}: {e}")
-        time.sleep(3600)  # or your preferred interval
+        time.sleep(3600) # Check every hour
 
 # Start the cleanup thread
 cleanup_thread = threading.Thread(target=cleanup_old_sessions, daemon=True)
