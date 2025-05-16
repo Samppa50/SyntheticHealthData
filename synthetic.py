@@ -12,7 +12,7 @@ from flask import session
 
 progress_data = {'value': 0}
 
-
+# Updates the progress bar
 def update_progress(session_id, value):
     progress_data[session_id] = value
 
@@ -20,24 +20,24 @@ def get_progress(session_id):
     return progress_data.get(session_id, 0)
 
 def set_df1(dataframe, session_id):
-    """Serialize and store df1 in the session."""
+    #Serialize and store df1 in the session
     print(f"Setting df1 for session_id: {session_id}")
     session[f'df1_{session_id}'] = pickle.dumps(dataframe)
 
 def get_df1(session_id):
-    """Retrieve and deserialize df1 from the session."""
+    #Retrieve and deserialize df1 from the session.
     pickled_df1 = session.get(f'df1_{session_id}')
     if pickled_df1 is None:
         raise ValueError("df1 has not been set for this session.")
     return pickle.loads(pickled_df1)
 
 def set_df2(dataframe, session_id):
-    """Serialize and store df2 in the session."""
+    #Serialize and store df2 in the session.
     print(f"Setting df2 for session_id: {session_id}")
     session[f'df2_{session_id}'] = pickle.dumps(dataframe)
 
 def get_df2(session_id):
-    """Retrieve and deserialize df2 from the session."""
+    #Retrieve and deserialize df2 from the session.
     pickled_df2 = session.get(f'df2_{session_id}')
     if pickled_df2 is None:
         raise ValueError("df2 has not been set for this session.")
@@ -140,7 +140,7 @@ def generate_file(col_values, line_amount, epoch_amount, name, session_id):
     data[ignore_zero] = data[ignore_zero].replace(0, np.nan)
     data = data.dropna(subset=ignore_zero)
  
-    #works on nan values
+    # Replaces any blank values with nan values and then turns the nan values into 0
     data.replace(r'^\s*$', np.nan, regex=True, inplace=True)
     data.fillna(0, inplace=True)
     
