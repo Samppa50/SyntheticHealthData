@@ -140,6 +140,7 @@ def generate_file(col_values, line_amount, epoch_amount, name, session_id):
     data[ignore_zero] = data[ignore_zero].replace(0, np.nan)
     data = data.dropna(subset=ignore_zero)
  
+    #works on nan values
     data.replace(r'^\s*$', np.nan, regex=True, inplace=True)
     data.fillna(0, inplace=True)
     
