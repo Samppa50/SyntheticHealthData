@@ -55,14 +55,15 @@
                     </div>
                     {% endfor %}
                 </div>
-                <div class="input-field">
-                    <label for="amount">Enter number of wanted lines:</label>
-                    <input type="number" name="line-amount" placeholder="Enter a number">
-                </div>
-                <div class="input-field">
-                    <label for="amount">Enter number of wanted epochs:</label>
-                    <p>(more epochs = better data)</p>
-                    <input type="number" name="epoch-amount" placeholder="Enter a number">
+                <div class="field-for-input">
+                    <div class="input-field">
+                        <label for="amount">Enter number of wanted lines</label>
+                        <input class="custom-input" type="number" name="line-amount" placeholder="Enter a number">
+                    </div>
+                    <div class="input-field">
+                        <label for="amount">Enter number of wanted epochs</label>
+                        <input class="custom-input" type="number" name="epoch-amount" placeholder="Enter a number">
+                    </div>
                 </div>
                 <div class="box">
                     <input type="submit" value="Submit" class="button">
@@ -114,9 +115,14 @@
         }
 
         const form = document.querySelector("form[action='/submit']");
+        const submitButton = form.querySelector('input[type="submit"]');
+
         form.addEventListener("submit", function () {
             window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
             updateProgress();
+            // Disable and gray out the submit button
+            submitButton.disabled = true;
+            submitButton.classList.add('disabled');
         });
 
         document.querySelectorAll('.exclude-checkbox').forEach(function(excludeCheckbox) {
