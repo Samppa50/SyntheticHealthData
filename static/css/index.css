@@ -55,6 +55,21 @@ body{
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for better aesthetics */
 }
 
+.category-block.grayed-out {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.category-block.grayed-out .exclude-checkbox {
+    pointer-events: auto; /* Allow exclude checkbox to be toggled back */
+    opacity: 1;
+}
+
+.category-block.grayed-out .exclude-ul label {
+    pointer-events: auto;
+    opacity: 1;
+}
+
 .category-block h2 {
     max-width: 33%; /* Set a width for the <h2> element */
     margin: 0; /* Remove default margin */

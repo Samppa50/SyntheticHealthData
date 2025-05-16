@@ -33,22 +33,22 @@
                     <div class="category-block">
                         <h2>{{ item }}</h2>
                         <div class="options">
-                            <ul>
+                            <ul class="exclude-ul">
                                 <p class="options-text">exclude column</p>
                                 <input type="hidden" name="exclude_columns" value=0>
-                                <input class="options-checkbox" type="checkbox" name="exclude_columns" value=1 id="exclude-column-{{ loop.index }}">
+                                <input class="options-checkbox exclude-checkbox" type="checkbox" name="exclude_columns" value=1 id="exclude-column-{{ loop.index }}">
                                 <label for="exclude-column-{{ loop.index }}"></label>
                             </ul>
-                            <ul>
+                            <ul class="bool-ul">
                                 <p class="options-text">bool</p>
                                 <input type="hidden" name="bool_values" value=0>
-                                <input class="options-checkbox" type="checkbox" name="bool_values" value=1 id="bool-{{ loop.index }}">
+                                <input class="options-checkbox bool-checkbox" type="checkbox" name="bool_values" value=1 id="bool-{{ loop.index }}">
                                 <label for="bool-{{ loop.index }}"></label>
                             </ul>
-                            <ul>
+                            <ul class="ignore-zero-ul">
                                 <p class="options-text">ignore zero</p>
                                 <input type="hidden" name="ignore_zero_values" value=0>
-                                <input class="options-checkbox" type="checkbox" name="ignore_zero_values" value=1 id="ignore-zero-{{ loop.index }}">
+                                <input class="options-checkbox ignore-zero-checkbox" type="checkbox" name="ignore_zero_values" value=1 id="ignore-zero-{{ loop.index }}">
                                 <label for="ignore-zero-{{ loop.index }}"></label>
                             </ul>
                         </div>
@@ -115,8 +115,28 @@
 
         const form = document.querySelector("form[action='/submit']");
         form.addEventListener("submit", function () {
+            window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
             updateProgress();
         });
+
+        document.querySelectorAll('.exclude-checkbox').forEach(function(excludeCheckbox) {
+        excludeCheckbox.addEventListener('change', function() {
+        // Find the parent category-block
+        const categoryBlock = excludeCheckbox.closest('.category-block');
+        const boolCheckbox = categoryBlock.querySelector('.bool-checkbox');
+        const ignoreZeroCheckbox = categoryBlock.querySelector('.ignore-zero-checkbox');
+
+        if (excludeCheckbox.checked) {
+            categoryBlock.classList.add('grayed-out');
+            boolCheckbox.disabled = true;
+            ignoreZeroCheckbox.disabled = true;
+        } else {
+            categoryBlock.classList.remove('grayed-out');
+            boolCheckbox.disabled = false;
+            ignoreZeroCheckbox.disabled = false;
+        }
+    });
+});
     </script>
 </body>
 </html>
