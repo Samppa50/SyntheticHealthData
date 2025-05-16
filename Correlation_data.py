@@ -8,9 +8,9 @@ from synthetic import get_df1, get_df2
 import os
 
 
-def correlation(new_file, original_file, session_id):
+def correlation(session_id):
 
-    df1 = get_df1(session_id, original_file)
+    df1 = get_df1(session_id)
     df2 = get_df2(session_id)
 
     # Fill missing values with the mean of each column
