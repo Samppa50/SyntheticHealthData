@@ -42,6 +42,13 @@ body{
     cursor: pointer;
 }
 
+.button.disabled,
+.button:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
 .category-block {
     display: flex; /* Use flexbox for horizontal alignment */
     justify-content: space-between; /* Add space between <h2> and .options */
@@ -128,6 +135,8 @@ body{
     justify-content: center;
     align-items: center;
     text-align: center;
+    padding-top: 30px;
+    padding-bottom: 100px;
 }
 
 .header {
@@ -201,4 +210,36 @@ body{
 /* Optional: Add hover effect */
 .options-checkbox + label:hover {
     background-color: #e8f5e9; /* Light green background on hover */
+}
+
+.field-for-input {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-direction: row; /* Stack children vertically */
+    gap: 2px; /* Add spacing between divs */
+    padding-top: 50px;
+    padding-bottom: 50px;
+
+}
+
+.custom-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Include padding and border in width */
+}
+
+/* For Chrome, Safari, Edge, Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* For Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
 }
