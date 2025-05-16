@@ -75,7 +75,6 @@ def generate_file(col_values, line_amount, epoch_amount, name, session_id):
     
     df_decimal_source = pd.read_csv('Files/uploads/'+ session_id+ '/' + name, dtype=str, encoding="ISO-8859-1", on_bad_lines='skip')
 
-    testsyntorg = data
     #counts the decimals that are used in the synthetic data
 
     def count_decimals(value):
