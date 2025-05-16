@@ -38,3 +38,22 @@ body{
     margin: 4px 2px;
     cursor: pointer;
 }
+
+.comparison-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; /* Space between the two images */
+    align-items: center; /* Center images vertically */
+    width: 80%; /* Full width of the container */
+    padding: 10px; /* Padding around the images */
+    background-color: #f9f9f9; /* Optional: Add a background color */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for better aesthetics */
+}
+
+.inner-comparison-container {
+    display: flex;
+    flex-direction: column; /* Stack the images vertically */
+    align-items: center; /* Center images horizontally */
+    width: 45%; /* Each image takes up 45% of the container */
+    padding: 10px; /* Padding around each image */
+}

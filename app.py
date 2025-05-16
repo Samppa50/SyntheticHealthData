@@ -1,7 +1,7 @@
 from flask import Flask, render_template, url_for, request, redirect, send_from_directory, session
 from werkzeug.utils import secure_filename
 from synthetic import main, generate_file, get_progress, update_progress
-from Correlation_data import correlation
+from Correlation_data import correlation, median_mean
 import os
 import shutil
 import uuid
@@ -114,7 +114,10 @@ def download_file(output_file):
 def review():
     session_id = session.get('session_id', '')
     picture = correlation(session_id)
-    return render_template("dataReview.html", picture=picture, session_id=session_id)
+    median_mean_df1, median_mean_df2 = median_mean(session_id)
+    median_mean_dict1 = median_mean_df1.to_dict(orient='index')
+    median_mean_dict2 = median_mean_df2.to_dict(orient='index')
+    return render_template("dataReview.html", picture=picture, median_mean_df1=median_mean_dict1, median_mean_df2=median_mean_dict2, session_id=session_id)
 
 @app.route('/delete')
 def delete():
