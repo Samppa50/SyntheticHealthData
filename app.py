@@ -6,6 +6,8 @@ import os
 import shutil
 import uuid
 from flask_session import Session
+import threading
+import time
 
 app = Flask(__name__)
 
@@ -18,6 +20,38 @@ app.config['SECRET_KEY'] = 'your_secret_key'  # Required for signing session dat
 
 # Initialize Flask-Session
 Session(app)
+
+# Deleting old session files (24 hours old)
+SESSION_EXPIRY_SECONDS = 86400
+
+def cleanup_old_sessions():
+    while True:
+        now = time.time()
+        session_dirs = [
+            'Files/uploads',
+            'Files/downloads',
+            'static/images',
+            './flask_session'
+        ]
+        for base_dir in session_dirs:
+            if not os.path.exists(base_dir):
+                continue
+            for session_id in os.listdir(base_dir):
+                session_path = os.path.join(base_dir, session_id)
+                if not os.path.isdir(session_path):
+                    continue
+                last_modified = os.path.getmtime(session_path)
+                if now - last_modified > SESSION_EXPIRY_SECONDS:
+                    try:
+                        shutil.rmtree(session_path, ignore_errors=True)
+                        print(f"Deleted old session folder: {session_path}")
+                    except Exception as e:
+                        print(f"Error deleting {session_path}: {e}")
+        time.sleep(3600)  # or your preferred interval
+
+# Start the cleanup thread
+cleanup_thread = threading.Thread(target=cleanup_old_sessions, daemon=True)
+cleanup_thread.start()
 
 @app.route("/")
 def index():
