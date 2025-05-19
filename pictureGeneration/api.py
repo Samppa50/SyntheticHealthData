@@ -18,6 +18,14 @@ def allowed_file(filename):
 
 @app.route('/upload', methods=['POST'])
 def upload_image():
+    # Access the extra fields sent from the other container
+    pic_amount = request.form.get('pic-amount', type=int)
+    epoch_amount = request.form.get('epoch-amount', type=int)
+    session_id = request.form.get('session_id')
+
+    # Now you can use these variables as needed
+    print(f"pic_amount: {pic_amount}, epoch_amount: {epoch_amount}, session_id: {session_id}")
+
     if 'image' not in request.files:
         return jsonify({'error': 'No image file provided'}), 400
 
