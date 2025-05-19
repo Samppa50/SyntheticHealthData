@@ -190,31 +190,33 @@ def test_upload():
 @app.route('/picture/upload', methods=['POST'])
 def picture_upload():
     url = "http://picture-generation:5002/upload"
-    file_path = "Files/pictures/uploads/"
+    session_id = session.get('session_id', str(uuid.uuid4()))
+    session['session_id'] = session_id
 
-    if request.method == "POST":
-        file = request.files['file']
-        if file:
-            session_id = session.get('session_id', str(uuid.uuid4()))  # Generate a unique session ID
-            session['session_id'] = session_id
+    upload_folder = f'Files/pictures/uploads/'
+    if not os.path.exists(upload_folder):
+        os.makedirs(upload_folder)
 
-            upload_folder = f'Files/pictures/uploads/'
-            if not os.path.exists(upload_folder):
-                os.makedirs(upload_folder)
+    # Get all files from the request
+    files = request.files.getlist('files')
+    if not files or files == [None]:
+        return "No files selected", 400
 
-            file_path = os.path.join(upload_folder, secure_filename(file.filename))
-            file.save(file_path)
-
+    results = []
+    for file in files:
+        if file and file.filename:
             sanitized_filename = secure_filename(file.filename.replace(" ", "_"))
-            session['file_name'] = sanitized_filename
             file_path = os.path.join(upload_folder, sanitized_filename)
-            with open(file_path, 'rb') as f:
-                files = {'image': f}
-                response = requests.post(url, files=files)
+            file.save(file_path)
+            session['file_name'] = sanitized_filename
 
-            return "file uploaded successfully", 200
-        else:
-            return "Missing file", 400
+            # Send each image to the picture-generation API
+            with open(file_path, 'rb') as f:
+                api_files = {'image': f}
+                response = requests.post(url, files=api_files)
+                results.append({'filename': sanitized_filename, 'status': response.status_code})
+
+    return f"{len(results)} files uploaded successfully", 200
 
 
 
