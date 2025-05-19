@@ -1,55 +1,46 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_restful import Api, Resource,reqparse, fields, marshal_with, abort
+import os
+from flask import Flask, request, jsonify
+from werkzeug.utils import secure_filename
+from datetime import datetime
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-db = SQLAlchemy(app)
 
-class Picture(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+# Config
+UPLOAD_FOLDER = 'uploads/'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-    def __repr__(self):
-        return f'<Picture {self.name}>'
+# Ensure the folder exists
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-user_args = reqparse.RequestParser()
-user_args.add_argument("name", type=str, required=True , help="Name of the picture cannot be blank")
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-userFields = {
-    'id': fields.Integer,
-    'name': fields.String
-}
+@app.route('/upload', methods=['POST'])
+def upload_image():
+    if 'image' not in request.files:
+        return jsonify({'error': 'No image file provided'}), 400
 
-class PictureResource(Resource):
-    @marshal_with(userFields)
-    def get(self, id):
-        picture = Picture.query.get(id)
-        if not picture:
-            abort(404, message="Picture not found")
-        return {"id": picture.id, "name": picture.name}
-    @marshal_with(userFields)
-    def post(self):
-        args = user_args.parse_args()
-        new_picture = Picture(name=args["name"])
-        db.session.add(new_picture)
-        db.session.commit()
-        return new_picture, 201  # Return only the new picture
-    @marshal_with(userFields)
-    def delete(self, id):
-        picture = Picture.query.get(id)
-        if not picture:
-            abort(404, message="Picture not found")
-        db.session.delete(picture)
-        db.session.commit()
-        return '', 204
-api = Api(app)
-api.add_resource(PictureResource, "/picture/<int:id>", "/picture")
+    file = request.files['image']
 
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
 
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S')
+        unique_filename = f"{timestamp}_{filename}"
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+        file.save(file_path)
+        return jsonify({'message': 'Upload successful', 'filename': unique_filename}), 200
 
-@app.route("/")
-def hello_world():
-    return "<p>This will be our picture api</p>"
+    return jsonify({'error': 'Invalid file type'}), 400
 
-app.run(debug=True ,host="0.0.0.0", port=5002)
+if __name__ == '__main__':
+    app.run(debug=True, port=5002, host='0.0.0.0')
+
+from flask import send_from_directory
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
