@@ -32,7 +32,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 COPY . .
 
 # Expose the port that the application listens on.
-EXPOSE 8000
+EXPOSE 5002
 
 # Run the application.
-CMD python generator.py
+CMD python3 api.py
