@@ -8,6 +8,7 @@ import uuid
 from flask_session import Session
 import threading
 import time
+import requests
 
 app = Flask(__name__)
 
@@ -174,5 +175,20 @@ def delete():
 
         session.clear()
     return redirect("/")
+
+
+@app.route('/picture/test', methods=['GET' ,'POST'])
+def test_upload():
+    url = "http://picture-generation:5002/upload"
+    file_path = "Files/pictures/image.jpg"
+
+    with open(file_path, 'rb') as f:
+        files = {'image': f}
+        response = requests.post(url, files=files)
+    return "test upload success"
+
+@app.route('/picture', methods=['GET', 'POST'])
+def picture():
+    return render_template("picture.html")
 
 app.run(debug=True, port=5001, host='0.0.0.0')
