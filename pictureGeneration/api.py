@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 # Config
 UPLOAD_FOLDER = 'uploads/'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Ensure the folder exists
@@ -39,8 +39,3 @@ def upload_image():
 if __name__ == '__main__':
     app.run(debug=True, port=5002, host='0.0.0.0')
 
-from flask import send_from_directory
-
-@app.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)

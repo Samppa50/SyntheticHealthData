@@ -2,5 +2,3 @@ torch
 torchvision
 matplotlib
 Flask
-flask_sqlalchemy
-flask_restful
