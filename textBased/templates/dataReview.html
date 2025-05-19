@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synthetic Data Review</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dataReview.css') }}">
+</head>
+<body>
+    <div class="big-container">
+        <div class="container">
+            <h1>Correlation Matrix Review</h1>
+            {% if picture %}
+                <img src="{{ url_for('static', filename=picture.split('static/', 1)[1]) }}" alt="Correlation Matrix" class="plot-image">
+            {% else %}
+                <p>No image available.</p>
+            {% endif %}
+        </div>
+        <div class="inner-comparison-container">
+                <h1>Median And Mean Review</h1>
+                <p>these values are rounded to 3 decimals</p>
+            </div>
+        <div class="comparison-container">
+            <div class="inner-comparison-container">
+                <h2>original file</h2>
+                {% for col, stats in median_mean_df1.items() %}
+                    <p>{{ col }} - Median: {{ stats['Median'] }}, Mean: {{ stats['Mean'] }}</p>
+                {% endfor %}
+            </div>
+            <div class="inner-comparison-container">
+                <h2>synthetic file</h2>
+                {% for col, stats in median_mean_df2.items() %}
+                    <p>{{ col }} - Median: {{ stats['Median'] }}, Mean: {{ stats['Mean'] }}</p>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="container-vertical">
+            <div class="container-vertical-stuff">
+            <p>If the download didn't start</p>
+            <a href="{{ url_for('download_file', output_file=session['output_file']) }}" class="button">Download File</a>
+            </div>
+            <div class="container-vertical-stuff">
+            <p>This removes all your files from server</p>
+            <a href="{{ url_for('delete') }}" class="button">Delete Files</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Trigger file download
+        window.onload = function() {
+            const downloadUrl = "{{ url_for('download_file', output_file=session['output_file']) }}";
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = '';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        };
+    </script>
+</body>
+</html>
