@@ -8,12 +8,18 @@
 
 <body>
     <div class="container">
-        <h1>Upload Picture</h1>
+        <h1>Upload Pictures</h1>
         <div class="upload-form">
-            <form action="{{ url_for('picture_upload') }}" method="post" enctype="multipart/form-data">
+            <form action="{{ url_for('picture_upload') }}" method="post" enctype="multipart/form-data" class="field-for-input">
+                <h2>wanted picture amount</h2>
+                <input type="number" name="pic-amount" placeholder="Enter number of wanted pictures" required class="input-field">
+                <h2>wanted epoch amount</h2>
+                <input type="number" name="epoch-amount" placeholder="Enter number of wanted epochs" required class="input-field">
                 <input type="file" name="files" accept="image/*" multiple webkitdirectory directory>
                 <button type="submit">Upload Pictures</button>
             </form>
+        </div>
+        <div class="upload-form">
             <form action="{{ url_for('test_upload') }}" method="post">
                 <button type="submit" class="button">Test Upload</button>
             </form>

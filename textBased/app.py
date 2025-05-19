@@ -192,6 +192,8 @@ def picture_upload():
     url = "http://picture-generation:5002/upload"
     session_id = session.get('session_id', str(uuid.uuid4()))
     session['session_id'] = session_id
+    pic_amount = request.form.get("pic-amount", default=10, type=int)
+    epoch_amount = request.form.get("epoch-amount", default=10, type=int)
 
     upload_folder = f'Files/pictures/uploads/'
     if not os.path.exists(upload_folder):
