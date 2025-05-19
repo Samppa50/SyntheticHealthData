@@ -1,0 +1,4 @@
+*.csv
+textBased/__pycache__/synthetic.cpython-312.pyc
+*.DS_Store
+*.xlsx
