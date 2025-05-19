@@ -177,7 +177,7 @@ def delete():
     return redirect("/")
 
 
-@app.route('/picture/test', methods=['GET' ,'POST'])
+@app.route('/picture/test', methods=['POST'])
 def test_upload():
     url = "http://picture-generation:5002/upload"
     file_path = "Files/pictures/image.jpg"
@@ -186,6 +186,37 @@ def test_upload():
         files = {'image': f}
         response = requests.post(url, files=files)
     return "test upload success"
+
+@app.route('/picture/upload', methods=['POST'])
+def picture_upload():
+    url = "http://picture-generation:5002/upload"
+    file_path = "Files/pictures/uploads/"
+
+    if request.method == "POST":
+        file = request.files['file']
+        if file:
+            session_id = session.get('session_id', str(uuid.uuid4()))  # Generate a unique session ID
+            session['session_id'] = session_id
+
+            upload_folder = f'Files/pictures/uploads/'
+            if not os.path.exists(upload_folder):
+                os.makedirs(upload_folder)
+
+            file_path = os.path.join(upload_folder, secure_filename(file.filename))
+            file.save(file_path)
+
+            sanitized_filename = secure_filename(file.filename.replace(" ", "_"))
+            session['file_name'] = sanitized_filename
+            file_path = os.path.join(upload_folder, sanitized_filename)
+            with open(file_path, 'rb') as f:
+                files = {'image': f}
+                response = requests.post(url, files=files)
+
+            return "file uploaded successfully", 200
+        else:
+            return "Missing file", 400
+
+
 
 @app.route('/picture', methods=['GET', 'POST'])
 def picture():
