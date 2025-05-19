@@ -195,7 +195,7 @@ def picture_upload():
     pic_amount = request.form.get("pic-amount", default=10, type=int)
     epoch_amount = request.form.get("epoch-amount", default=10, type=int)
 
-    upload_folder = f'Files/pictures/uploads/'
+    upload_folder = f'Files/pictures/uploads/{session_id}'
     if not os.path.exists(upload_folder):
         os.makedirs(upload_folder)
 
@@ -215,8 +215,14 @@ def picture_upload():
             # Send each image to the picture-generation API
             with open(file_path, 'rb') as f:
                 api_files = {'image': f}
-                response = requests.post(url, files=api_files)
+                api_data = {
+                    'pic-amount': pic_amount,
+                    'epoch-amount': epoch_amount,
+                    'session_id': session_id
+                }
+                response = requests.post(url, files=api_files, data=api_data)
                 results.append({'filename': sanitized_filename, 'status': response.status_code})
+
 
     return f"{len(results)} files uploaded successfully", 200
 
