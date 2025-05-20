@@ -35,4 +35,4 @@ COPY . .
 EXPOSE 5002
 
 # Run the application.
-CMD python3 api.py
+CMD python generator.py

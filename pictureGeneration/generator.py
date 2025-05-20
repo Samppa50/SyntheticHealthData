@@ -6,6 +6,8 @@ from torch.utils.data import DataLoader
 from torchvision.utils import save_image, make_grid
 import os
 
+print(torch.cuda.is_available())
+
 class Generator(nn.Module):
     def __init__(self, z_dim, img_channels, feature_g):
         super(Generator, self).__init__()
