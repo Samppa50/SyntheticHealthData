@@ -214,7 +214,7 @@ def picture_upload():
 
             # Send each image to the picture-generation API
             with open(file_path, 'rb') as f:
-                api_files = {'image': f}
+                api_files = {'images': f}
                 api_data = {
                     'pic-amount': pic_amount,
                     'epoch-amount': epoch_amount,

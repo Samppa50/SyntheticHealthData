@@ -24,29 +24,37 @@ def upload_image():
     epoch_amount = request.form.get('epoch-amount', type=int)
     session_id = request.form.get('session_id')
 
-    # Now you can use these variables as needed
     print(f"pic_amount: {pic_amount}, epoch_amount: {epoch_amount}, session_id: {session_id}")
 
-    if 'image' not in request.files:
-        return jsonify({'error': 'No image file provided'}), 400
+    # Accept multiple files with the key 'images'
+    if 'images' not in request.files:
+        return jsonify({'error': 'No image files provided'}), 400
 
-    file = request.files['image']
+    files = request.files.getlist('images')
+    print([file.filename for file in files])
+    if not files or all(f.filename == '' for f in files):
+        return jsonify({'error': 'No selected files'}), 400
 
-    if file.filename == '':
-        return jsonify({'error': 'No selected file'}), 400
+    saved_files = []
+    for file in files:
+        i = 1
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            #timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S%f')
+            unique_filename = f"{i}_{filename}"
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+            file.save(file_path)
+            saved_files.append(unique_filename)
+            i += 1
+        else:
+            print(f"Skipping invalid file: {file.filename}")
 
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S')
-        unique_filename = f"{timestamp}_{filename}"
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
-        file.save(file_path)
-        
-        generate(session_id, pic_amount, epoch_amount)
+    if not saved_files:
+        return jsonify({'error': 'No valid image files provided'}), 400
 
-        return jsonify({'message': 'Upload successful', 'filename': unique_filename}), 200
+    generate(session_id, pic_amount, epoch_amount)
 
-    return jsonify({'error': 'Invalid file type'}), 400
+    return jsonify({'message': 'Upload successful', 'filenames': saved_files}), 200
 
 if __name__ == '__main__':
     app.run(debug=True, port=5002, host='0.0.0.0')
