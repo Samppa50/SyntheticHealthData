@@ -1,8 +1,9 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from werkzeug.utils import secure_filename
 from datetime import datetime
 from generator import generate
+import shutil
 
 app = Flask(__name__)
 
@@ -55,6 +56,24 @@ def upload_image():
     generate(session_id, pic_amount, epoch_amount)
 
     return jsonify({'message': 'Upload successful', 'filenames': saved_files}), 200
+
+@app.route('/download/<folder_name>', methods=['GET'])
+def download_folder(folder_name):
+    folder_path = os.path.join('download', folder_name)
+    if not os.path.exists(folder_path):
+        return jsonify({'error': 'Folder not found'}), 404
+
+    zip_path = f"{folder_path}.zip"
+    # Create a zip of the folder
+    shutil.make_archive(folder_path, 'zip', folder_path)
+
+    # Send the zip file
+    response = send_file(zip_path, as_attachment=True)
+
+    # Optionally, clean up the zip after sending
+    #os.remove(zip_path)
+
+    return response
 
 if __name__ == '__main__':
     app.run(debug=True, port=5002, host='0.0.0.0')

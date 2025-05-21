@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect, send_from_directory, session
+from flask import Flask, render_template, url_for, request, redirect, send_from_directory, session, send_file
 from werkzeug.utils import secure_filename
 from synthetic import main, generate_file, get_progress, update_progress
 from Correlation_data import correlation, median_mean
@@ -9,6 +9,8 @@ from flask_session import Session
 import threading
 import time
 import requests
+import io
+
 
 app = Flask(__name__)
 
@@ -226,6 +228,24 @@ def picture_upload():
 
     return f"{len(results)} files uploaded successfully", 200
 
+
+@app.route('/picture/download/<folder_name>')
+def picture_download(folder_name):
+    # Call the picture-generation API to get the zip
+    url = f"http://picture-generation:5002/download/{folder_name}"
+    response = requests.get(url, stream=True)
+    if response.status_code != 200:
+        return f"Error downloading zip: {response.text}", response.status_code
+
+    # Stream the zip file to the user
+    zip_bytes = io.BytesIO(response.content)
+    zip_bytes.seek(0)
+    return send_file(
+        zip_bytes,
+        mimetype='application/zip',
+        as_attachment=True,
+        download_name=f"{folder_name}.zip"
+    )
 
 
 @app.route('/picture', methods=['GET', 'POST'])
