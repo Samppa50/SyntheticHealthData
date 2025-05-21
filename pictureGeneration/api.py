@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 from datetime import datetime
+from generator import generate
 
 app = Flask(__name__)
 
@@ -40,6 +41,9 @@ def upload_image():
         unique_filename = f"{timestamp}_{filename}"
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
         file.save(file_path)
+        
+        generate(session_id, pic_amount, epoch_amount)
+
         return jsonify({'message': 'Upload successful', 'filename': unique_filename}), 200
 
     return jsonify({'error': 'Invalid file type'}), 400
