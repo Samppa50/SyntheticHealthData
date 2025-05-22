@@ -225,16 +225,16 @@ def picture_upload():
                 response = requests.post(url, files=api_files, data=api_data)
                 results.append({'filename': sanitized_filename, 'status': response.status_code})
 
+    #folder_name = session.get('session_id', str(uuid.uuid4()))
+    return redirect(url_for('picture_ready'))
+
+
+@app.route('/picture/download')
+def picture_download():
     folder_name = session.get('session_id', str(uuid.uuid4()))
-    return redirect(url_for('picture_download', folder_name=folder_name))
-
-#@app.route('/picture/flag/<folder_name>', methods=['GET', 'POST'])
-#def picture_flag(folder_name):
-#    return redirect(url_for('picture_download', folder_name=folder_name))
-
-
-@app.route('/picture/download/<folder_name>')
-def picture_download(folder_name):
+    if not folder_name:
+        return "No session ID found", 400
+    print(folder_name)
     # Call the picture-generation API to get the zip
     url = f"http://picture-generation:5002/download/{folder_name}"
     response = requests.get(url, stream=True)
@@ -250,6 +250,19 @@ def picture_download(folder_name):
         as_attachment=True,
         download_name=f"{folder_name}.zip"
     )
+
+@app.route('/picture/delete', methods=['POST'])
+def picture_delete():
+    session_id = session.get('session_id', '')
+    if session_id:
+        upload_folder = f'Files/pictures/uploads/{session_id}'
+        if os.path.exists(upload_folder):
+            shutil.rmtree(upload_folder, ignore_errors=True)
+
+        # data still needs to be deleted from the picture-generation API
+
+        session.clear()
+    return redirect("/")
 
 
 @app.route('/picture', methods=['GET', 'POST'])
