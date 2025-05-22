@@ -256,4 +256,8 @@ def picture_download(folder_name):
 def picture():
     return render_template("picture.html")
 
+@app.route('/picture/ready', methods=['GET', 'POST'])
+def picture_ready():
+    return render_template("pictureReady.html")
+
 app.run(debug=True, port=5001, host='0.0.0.0')
