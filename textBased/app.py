@@ -225,14 +225,18 @@ def picture_upload():
                 response = requests.post(url, files=api_files, data=api_data)
                 results.append({'filename': sanitized_filename, 'status': response.status_code})
 
+    folder_name = session.get('session_id', str(uuid.uuid4()))
+    return redirect(url_for('picture_download', folder_name=folder_name))
 
-    return f"{len(results)} files uploaded successfully", 200
+#@app.route('/picture/flag/<folder_name>', methods=['GET', 'POST'])
+#def picture_flag(folder_name):
+#    return redirect(url_for('picture_download', folder_name=folder_name))
 
 
 @app.route('/picture/download/<folder_name>')
 def picture_download(folder_name):
     # Call the picture-generation API to get the zip
-    url = f"http://picture-generation:5002/download/{folder_name}"
+    url = f"http://picture-generation:5002/download/testfolder"
     response = requests.get(url, stream=True)
     if response.status_code != 200:
         return f"Error downloading zip: {response.text}", response.status_code

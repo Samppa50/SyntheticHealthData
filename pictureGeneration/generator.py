@@ -67,7 +67,7 @@ def generate(session_id, pic_amount, epoch_amount):
     channels_img = 1  # 3 for RGB datasets like CIFAR10
     features_d = 64
     features_g = 64
-    batch_size = 128
+    batch_size = 64 #was 128
     lr = 2e-4
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -91,7 +91,7 @@ def generate(session_id, pic_amount, epoch_amount):
     dataset = datasets.MNIST(root="data", train=True, transform=transform, download=True)
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
-    num_epochs = 5
+    num_epochs = 1
     fixed_noise = torch.randn(64, z_dim, 1, 1).to(device)
 
     for epoch in range(num_epochs):
