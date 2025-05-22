@@ -118,6 +118,8 @@ def generate(session_id, pic_amount, epoch_amount):
             opt_gen.step()
 
         print(f"Epoch [{epoch+1}/{num_epochs}] | Loss D: {loss_disc.item():.4f} | Loss G: {loss_gen.item():.4f}")
-        save_image(gen(fixed_noise), f"generated_epoch_{epoch+1}.png", normalize=True)
+        output_dir = os.path.join("download", str(session_id))
+        os.makedirs(output_dir, exist_ok=True)
+        save_image(gen(fixed_noise), os.path.join(output_dir, f"generated_epoch_{epoch+1}.png"), normalize=True)
         
         return 0

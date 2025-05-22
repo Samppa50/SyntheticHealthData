@@ -236,7 +236,7 @@ def picture_upload():
 @app.route('/picture/download/<folder_name>')
 def picture_download(folder_name):
     # Call the picture-generation API to get the zip
-    url = f"http://picture-generation:5002/download/testfolder"
+    url = f"http://picture-generation:5002/download/{folder_name}"
     response = requests.get(url, stream=True)
     if response.status_code != 200:
         return f"Error downloading zip: {response.text}", response.status_code
