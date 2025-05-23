@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect, send_from_directory, session
+from flask import Flask, render_template, url_for, request, redirect, send_from_directory, session, send_file
 from werkzeug.utils import secure_filename
 from synthetic import main, generate_file, get_progress, update_progress
 from Correlation_data import correlation, median_mean
@@ -8,6 +8,9 @@ import uuid
 from flask_session import Session
 import threading
 import time
+import requests
+import io
+
 
 app = Flask(__name__)
 
@@ -174,5 +177,90 @@ def delete():
 
         session.clear()
     return redirect("/")
+
+
+@app.route('/picture/upload', methods=['POST'])
+def picture_upload():
+    url = "http://picture-generation:5002/upload"
+    session_id = session.get('session_id', str(uuid.uuid4()))
+    session['session_id'] = session_id
+    pic_amount = request.form.get("pic-amount", default=10, type=int)
+    epoch_amount = request.form.get("epoch-amount", default=10, type=int)
+
+    upload_folder = f'Files/pictures/uploads/{session_id}'
+    if not os.path.exists(upload_folder):
+        os.makedirs(upload_folder)
+
+    # Get all files from the request
+    files = request.files.getlist('files')
+    if not files or files == [None]:
+        return "No files selected", 400
+
+    results = []
+    for file in files:
+        if file and file.filename:
+            sanitized_filename = secure_filename(file.filename.replace(" ", "_"))
+            file_path = os.path.join(upload_folder, sanitized_filename)
+            file.save(file_path)
+            session['file_name'] = sanitized_filename
+
+            # Send each image to the picture-generation API
+            with open(file_path, 'rb') as f:
+                api_files = {'images': f}
+                api_data = {
+                    'pic-amount': pic_amount,
+                    'epoch-amount': epoch_amount,
+                    'session_id': session_id
+                }
+                response = requests.post(url, files=api_files, data=api_data)
+                results.append({'filename': sanitized_filename, 'status': response.status_code})
+
+    #folder_name = session.get('session_id', str(uuid.uuid4()))
+    return redirect(url_for('picture_ready'))
+
+
+@app.route('/picture/download')
+def picture_download():
+    folder_name = session.get('session_id', str(uuid.uuid4()))
+    if not folder_name:
+        return "No session ID found", 400
+    print(folder_name)
+    # Call the picture-generation API to get the zip
+    url = f"http://picture-generation:5002/download/{folder_name}"
+    response = requests.get(url, stream=True)
+    if response.status_code != 200:
+        return f"Error downloading zip: {response.text}", response.status_code
+
+    # Stream the zip file to the user
+    zip_bytes = io.BytesIO(response.content)
+    zip_bytes.seek(0)
+    return send_file(
+        zip_bytes,
+        mimetype='application/zip',
+        as_attachment=True,
+        download_name=f"{folder_name}.zip"
+    )
+
+@app.route('/picture/delete', methods=['POST'])
+def picture_delete():
+    session_id = session.get('session_id', '')
+    if session_id:
+        upload_folder = f'Files/pictures/uploads/{session_id}'
+        if os.path.exists(upload_folder):
+            shutil.rmtree(upload_folder, ignore_errors=True)
+
+        # data still needs to be deleted from the picture-generation API
+
+        session.clear()
+    return redirect("/")
+
+
+@app.route('/picture', methods=['GET', 'POST'])
+def picture():
+    return render_template("picture.html")
+
+@app.route('/picture/ready', methods=['GET', 'POST'])
+def picture_ready():
+    return render_template("pictureReady.html")
 
 app.run(debug=True, port=5001, host='0.0.0.0')

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload File</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+
+<body>
+    <div class="container">
+        <H1 style="padding-top: 50px">your pictures have been prosessed</H1>
+        <div class="container-row">
+            <div style="padding: 20px;">
+                <form action="{{ url_for('picture_download') }}" method="get">
+                    <button type="submit" class="button">Download</button>
+                </form>
+            </div>
+            <div style="padding: 20px;">
+                <form action="{{ url_for('picture_delete') }}" method="post">
+                    <button type="submit" class="button">Delete files</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Trigger file download
+        window.onload = function() {
+            const downloadUrl = "{{ url_for('picture_download') }}";
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = '';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        };
+    </script>
+</body>
+</html>

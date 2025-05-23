@@ -8,11 +8,31 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
-  server:
-    build:
-      context: .
+  main_app:
+    build: .
     ports:
-      - 5001:5001
+      - "5001:5001"
+    depends_on:
+      - picture-generation
+    networks:
+      - my_network
+
+  picture-generation:
+    build: ../pictureGeneration
+    ports:
+      - "5002:5002"
+    networks:
+      - my_network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+
+
+networks:
+  my_network:
+    driver: bridge
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to

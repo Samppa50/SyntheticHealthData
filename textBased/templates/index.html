@@ -71,6 +71,9 @@
             </form>
             {% endif %}
         </div>
+        <form action="{{ url_for('picture') }}">
+            <button id="picture-page-btn" class="button">Picture page</button>
+        </form>
     </div>
     <script>
         let startTime = null;
@@ -116,6 +119,7 @@
 
         const form = document.querySelector("form[action='/submit']");
         const submitButton = form.querySelector('input[type="submit"]');
+        const picturePageBtn = document.getElementById('picture-page-btn');
 
         form.addEventListener("submit", function () {
             window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
@@ -123,6 +127,10 @@
             // Disable and gray out the submit button
             submitButton.disabled = true;
             submitButton.classList.add('disabled');
+            if (picturePageBtn) {
+                picturePageBtn.disabled = true;
+                picturePageBtn.classList.add('disabled');
+            }
         });
 
         document.querySelectorAll('.exclude-checkbox').forEach(function(excludeCheckbox) {
