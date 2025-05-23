@@ -2,9 +2,29 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torchvision import datasets, transforms
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset
 from torchvision.utils import save_image, make_grid
 import os
+from PIL import Image
+
+class CustomImageDataset(Dataset):
+    def init(self, image_dir, transform=None):
+        self.image_dir = image_dir
+        self.transform = transform
+        self.image_files = [f for f in os.listdir(image_dir) if os.path.isfile(os.path.join(image_dir, f))]
+
+    def len(self):
+        return len(self.image_files)
+
+    def getitem(self, idx):
+        img_path = os.path.join(self.image_dir, self.image_files[idx])
+        image = Image.open(img_path).convert("RGB")
+        if self.transform:
+            image = self.transform(image)
+        return image 
+
+
+
 
 def generate(session_id, pic_amount, epoch_amount):
 
@@ -64,10 +84,10 @@ def generate(session_id, pic_amount, epoch_amount):
     # Hyperparameters
     z_dim = 100
     image_size = 64
-    channels_img = 1  # 3 for RGB datasets like CIFAR10
+    channels_img = 3  # 3 for RGB datasets like CIFAR10
     features_d = 64
     features_g = 64
-    batch_size = 64 #was 128
+    batch_size = 128
     lr = 2e-4
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -84,14 +104,17 @@ def generate(session_id, pic_amount, epoch_amount):
 
     transform = transforms.Compose([
         transforms.Resize(image_size),
+        transforms.CenterCrop(image_size),
         transforms.ToTensor(),
-        transforms.Normalize([0.5], [0.5]),
+        transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5]),
     ])
 
-    dataset = datasets.MNIST(root="data", train=True, transform=transform, download=True)
+    dataset = CustomImageDataset(image_dir='uploads/'+session_id+'/', transform=transform)
+    #dataset = datasets.ImageFolder(root="uploads", transform=transform)
+    #dataset = datasets.MNIST(root="data", train=True, transform=transform, download=True)
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
-    num_epochs = 1
+    num_epochs = epoch_amount
     fixed_noise = torch.randn(64, z_dim, 1, 1).to(device)
 
     for epoch in range(num_epochs):
@@ -122,4 +145,4 @@ def generate(session_id, pic_amount, epoch_amount):
         os.makedirs(output_dir, exist_ok=True)
         save_image(gen(fixed_noise), os.path.join(output_dir, f"generated_epoch_{epoch+1}.png"), normalize=True)
         
-        return 0
+    return 0
