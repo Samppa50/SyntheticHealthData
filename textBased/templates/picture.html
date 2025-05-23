@@ -9,21 +9,41 @@
 <body>
     <div class="container">
         <h1>Upload Pictures</h1>
-        <div class="upload-form">
-            <form action="{{ url_for('picture_upload') }}" method="post" enctype="multipart/form-data" class="field-for-input">
-                <h2>wanted picture amount</h2>
-                <input type="number" name="pic-amount" placeholder="Enter number of wanted pictures" required class="input-field">
-                <h2>wanted epoch amount</h2>
-                <input type="number" name="epoch-amount" placeholder="Enter number of wanted epochs" required class="input-field">
-                <input type="file" name="files" accept="image/*" multiple webkitdirectory directory>
-                <button type="submit">Upload Pictures</button>
+        <div class="container">
+            <form action="{{ url_for('picture_upload') }}" method="post" enctype="multipart/form-data" class="container">
+                <div class="container">
+                    <h2>wanted picture amount</h2>
+                    <input type="number" name="pic-amount" placeholder="Enter number of wanted pictures" required class="custom-input">
+                </div>
+                <div class="container">
+                    <h2>wanted epoch amount</h2>
+                    <input type="number" name="epoch-amount" placeholder="Enter number of wanted epochs" required class="custom-input">
+                </div>
+                <div class="container-row" style="padding-top: 25px;">
+                    <input type="file" name="files" accept="image/*" multiple webkitdirectory directory>
+                    <button id="upload-btn" type="submit" class="button">Upload Pictures</button>
+                </div>
             </form>
         </div>
-        <div class="upload-form">
-            <form action="{{ url_for('test_upload') }}" method="post">
-                <button type="submit" class="button">Test Upload</button>
-            </form>
-        </div>
+        <form action="{{ url_for('index') }}">
+            <button id="text-page-btn" class="button">Text page</button>
+        </form>
     </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const uploadForm = document.querySelector('form[action="{{ url_for("picture_upload") }}"]');
+        const uploadBtn = document.getElementById('upload-btn');
+        const textPageBtn = document.getElementById('text-page-btn');
+
+        if (uploadForm && uploadBtn && textPageBtn) {
+            uploadForm.addEventListener('submit', function() {
+                uploadBtn.disabled = true;
+                uploadBtn.classList.add('disabled');
+                textPageBtn.disabled = true;
+                textPageBtn.classList.add('disabled');
+            });
+        }
+    });
+    </script>
 </body>
 </html>

@@ -8,13 +8,19 @@
 
 <body>
     <div class="container">
-        <H1>your pictures have been prosessed</H1>
-            <form action="{{ url_for('picture_download') }}" method="get">
-                <button type="submit" class="button">Download again</button>
-            </form>
-            <form action="{{ url_for('picture_delete') }}" method="post">
-                <button type="submit" class="button">Delete files</button>
-            </form>
+        <H1 style="padding-top: 50px">your pictures have been prosessed</H1>
+        <div class="container-row">
+            <div style="padding: 20px;">
+                <form action="{{ url_for('picture_download') }}" method="get">
+                    <button type="submit" class="button">Download</button>
+                </form>
+            </div>
+            <div style="padding: 20px;">
+                <form action="{{ url_for('picture_delete') }}" method="post">
+                    <button type="submit" class="button">Delete files</button>
+                </form>
+            </div>
+        </div>
     </div>
     <script>
         // Trigger file download

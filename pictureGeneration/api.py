@@ -75,18 +75,6 @@ def download_folder(folder_name):
 
     return response
 
-#@app.route("/call_flag", methods=["POST"])
-#def call_flag():
-#    folder_name = request.form.get("folder_name")
-#    url = f"http://text-based:5001/picture/flag/{folder_name}"
-#   if not folder_name:
-#        return jsonify({"error": "No folder name provided"}), 400
-#    response = request.post(url, data={"folder_name": folder_name})
-#    if response.status_code == 200:
-#        return jsonify({"message": "Flagged successfully"}), 200
-#    else:
-#        return jsonify({"error": "Failed to flag"}), response.status_code
-    
 
 if __name__ == '__main__':
     app.run(debug=True, port=5002, host='0.0.0.0')

@@ -179,16 +179,6 @@ def delete():
     return redirect("/")
 
 
-@app.route('/picture/test', methods=['POST'])
-def test_upload():
-    url = "http://picture-generation:5002/upload"
-    file_path = "Files/pictures/image.jpg"
-
-    with open(file_path, 'rb') as f:
-        files = {'image': f}
-        response = requests.post(url, files=files)
-    return "test upload success"
-
 @app.route('/picture/upload', methods=['POST'])
 def picture_upload():
     url = "http://picture-generation:5002/upload"
