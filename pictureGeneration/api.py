@@ -25,7 +25,12 @@ def upload_image():
     epoch_amount = request.form.get('epoch-amount', type=int)
     session_id = request.form.get('session_id')
 
+    upload_folder_path = UPLOAD_FOLDER + session_id + "/"
+
     print(f"pic_amount: {pic_amount}, epoch_amount: {epoch_amount}, session_id: {session_id}")
+
+    # Ensure the session-specific upload folder exists
+    os.makedirs(upload_folder_path, exist_ok=True)
 
     # Accept multiple files with the key 'images'
     if 'images' not in request.files:
@@ -37,13 +42,13 @@ def upload_image():
         return jsonify({'error': 'No selected files'}), 400
 
     saved_files = []
+    i = 1
     for file in files:
-        i = 1
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             #timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S%f')
             unique_filename = f"{i}_{filename}"
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+            file_path = os.path.join(upload_folder_path, unique_filename)
             file.save(file_path)
             saved_files.append(unique_filename)
             i += 1
