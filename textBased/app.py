@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect, send_from_directory, session, send_file
+from flask import Flask, render_template, url_for, request, redirect, send_from_directory, session, send_file, jsonify
 from werkzeug.utils import secure_filename
 from synthetic import main, generate_file, get_progress, update_progress
 from Correlation_data import correlation, median_mean
@@ -177,6 +177,13 @@ def delete():
 
         session.clear()
     return redirect("/")
+
+@app.route('/picture/progress')
+def picture_progress():
+    url = "http://picture-generation:5002/progress"
+    progress = requests.get(url)
+    print(f"Progress: {progress.json()}")
+    return jsonify(progress.json())
 
 
 @app.route('/picture/upload', methods=['POST'])

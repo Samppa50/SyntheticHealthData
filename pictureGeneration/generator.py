@@ -7,6 +7,17 @@ from torchvision.utils import save_image, make_grid
 import os
 from PIL import Image
 
+progress_bar = 0
+
+def get_progress():
+    return progress_bar
+
+def set_progress(progress):
+    global progress_bar
+    progress_bar = progress
+    print(f"Progress set to: {progress}")
+
+
 class CustomImageDataset(Dataset):
     def __init__(self, image_dir, transform=None):
         self.image_dir = image_dir
@@ -190,6 +201,9 @@ def generate(session_id, pic_amount, epoch_amount):
                 output_dir = os.path.join("download", str(session_id))
                 os.makedirs(output_dir, exist_ok=True)
                 save_image(fake_images, os.path.join(output_dir, f"generated_epoch_{epoch+1}.png"), normalize=True)
+
+        set_progress(epoch / num_epochs * 100)
+    set_progress(0)
 
         
     return 0

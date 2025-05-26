@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, jsonify, send_file, redirect
 from werkzeug.utils import secure_filename
 from datetime import datetime
-from generator import generate
+from generator import generate, get_progress
 import shutil
 
 app = Flask(__name__)
@@ -80,6 +80,11 @@ def download_folder(folder_name):
 
     return response
 
+
+@app.route('/progress', methods=['GET'])
+def get_progress_route():
+    progress = get_progress()
+    return jsonify({'progress': progress})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5002, host='0.0.0.0')
