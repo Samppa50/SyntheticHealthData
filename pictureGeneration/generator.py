@@ -8,15 +8,15 @@ import os
 from PIL import Image
 
 class CustomImageDataset(Dataset):
-    def init(self, image_dir, transform=None):
+    def __init__(self, image_dir, transform=None):
         self.image_dir = image_dir
         self.transform = transform
         self.image_files = [f for f in os.listdir(image_dir) if os.path.isfile(os.path.join(image_dir, f))]
 
-    def len(self):
+    def __len__(self):
         return len(self.image_files)
 
-    def getitem(self, idx):
+    def __getitem__(self, idx):
         img_path = os.path.join(self.image_dir, self.image_files[idx])
         image = Image.open(img_path).convert("RGB")
         if self.transform:
@@ -59,8 +59,8 @@ def generate(session_id, pic_amount, epoch_amount):
                 nn.Tanh()
             )
 
-    def forward(self, input):
-        return self.main(input)
+        def forward(self, input):
+            return self.main(input)
 
 # Discriminator (no sigmoid)
     class Discriminator(nn.Module):
@@ -146,11 +146,12 @@ def generate(session_id, pic_amount, epoch_amount):
         transforms.ToTensor(),
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
     ])
-    dataset = CustomImageDataset(image_dir='data/hand', transform=transform)
+    data_location = 'uploads/' + session_id + "/"
+    dataset = CustomImageDataset(image_dir=data_location, transform=transform)
     dataloader = DataLoader(dataset, batch_size=64, shuffle=True)
 
     # Training
-    num_epochs = 5000
+    num_epochs = epoch_amount
     for epoch in range(num_epochs):
         for i, data in enumerate(dataloader):
             real_data = data.to(device)
@@ -186,7 +187,9 @@ def generate(session_id, pic_amount, epoch_amount):
         if epoch % 100 == 0:
             with torch.no_grad():
                 fake_images = netG(torch.randn(64, nz, 1, 1, device=device)).detach().cpu()
-                save_image(fake_images, f"generated_epoch_{epoch+1}.png", normalize=True)
+                output_dir = os.path.join("download", str(session_id))
+                os.makedirs(output_dir, exist_ok=True)
+                save_image(fake_images, os.path.join(output_dir, f"generated_epoch_{epoch+1}.png"), normalize=True)
 
         
     return 0
