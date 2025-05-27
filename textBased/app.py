@@ -222,6 +222,9 @@ def picture_upload():
                 response = requests.post(url, files=api_files, data=api_data)
                 results.append({'filename': sanitized_filename, 'status': response.status_code})
 
+            if response.status_code == 403:
+                return "Forbidden: Server is busy at the moment.", 403
+
     #folder_name = session.get('session_id', str(uuid.uuid4()))
     return redirect(url_for('picture_ready'))
 
