@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, jsonify, send_file, redirect
 from werkzeug.utils import secure_filename
 from datetime import datetime
-from generator import generate
+from generator import generate, get_progress
 import shutil
 
 app = Flask(__name__)
@@ -11,6 +11,7 @@ app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+current_id = 404
 
 # Ensure the folder exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -20,16 +21,19 @@ def allowed_file(filename):
 
 @app.route('/upload', methods=['POST'])
 def upload_image():
+    global current_id
+
     # Access the extra fields sent from the other container
     pic_amount = request.form.get('pic-amount', type=int)
     epoch_amount = request.form.get('epoch-amount', type=int)
     session_id = request.form.get('session_id')
 
-    upload_folder_path = UPLOAD_FOLDER + session_id + "/"
+    if progress != 0 and current_id != session_id:
+        return jsonify({'error': 'Another generation is in progress. Please wait until it finishes.'}), 403
 
-    print(f"pic_amount: {pic_amount}, epoch_amount: {epoch_amount}, session_id: {session_id}")
+    current_id = session_id
 
-    # Ensure the session-specific upload folder exists
+    upload_folder_path = os.path.join(UPLOAD_FOLDER, session_id)
     os.makedirs(upload_folder_path, exist_ok=True)
 
     # Accept multiple files with the key 'images'
@@ -46,7 +50,6 @@ def upload_image():
     for file in files:
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            #timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S%f')
             unique_filename = f"{i}_{filename}"
             file_path = os.path.join(upload_folder_path, unique_filename)
             file.save(file_path)
@@ -58,6 +61,7 @@ def upload_image():
     if not saved_files:
         return jsonify({'error': 'No valid image files provided'}), 400
 
+    # Only now, after all images are uploaded, start processing
     generate(session_id, pic_amount, epoch_amount)
 
     return redirect(f"/call_flag")
@@ -80,6 +84,12 @@ def download_folder(folder_name):
 
     return response
 
+
+@app.route('/progress', methods=['GET'])
+def get_progress_route():
+    global progress
+    progress = get_progress()
+    return jsonify({'progress': progress})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5002, host='0.0.0.0')
