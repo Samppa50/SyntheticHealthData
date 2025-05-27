@@ -79,10 +79,18 @@ def download_folder(folder_name):
     # Send the zip file
     response = send_file(zip_path, as_attachment=True)
 
-    # Optionally, clean up the zip after sending
-    #os.remove(zip_path)
+    os.remove(zip_path)
 
     return response
+
+@app.route('/user/data/delete', methods=['DELETE'])
+def delete_user_data():
+    global current_id
+    current_id = 404
+    shutil.rmtree(UPLOAD_FOLDER, ignore_errors=True)
+    print("User data deleted successfully.")
+    return jsonify({'message': 'User data deleted successfully.'})
+
 
 
 @app.route('/progress', methods=['GET'])

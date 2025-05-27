@@ -260,7 +260,8 @@ def picture_delete():
             shutil.rmtree(upload_folder, ignore_errors=True)
 
         # data still needs to be deleted from the picture-generation API
-
+        url = f"http://picture-generation:5002/user/data/delete"
+        response = requests.delete(url)
         session.clear()
     return redirect("/")
 
