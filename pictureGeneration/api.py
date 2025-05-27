@@ -11,6 +11,7 @@ app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+current_id = 404
 
 # Ensure the folder exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -20,51 +21,50 @@ def allowed_file(filename):
 
 @app.route('/upload', methods=['POST'])
 def upload_image():
-        
-    if progress != 0:
+    global current_id
+
+    # Access the extra fields sent from the other container
+    pic_amount = request.form.get('pic-amount', type=int)
+    epoch_amount = request.form.get('epoch-amount', type=int)
+    session_id = request.form.get('session_id')
+
+    if progress != 0 and current_id != session_id:
         return jsonify({'error': 'Another generation is in progress. Please wait until it finishes.'}), 403
-    else:
-        # Access the extra fields sent from the other container
-        pic_amount = request.form.get('pic-amount', type=int)
-        epoch_amount = request.form.get('epoch-amount', type=int)
-        session_id = request.form.get('session_id')
 
-        upload_folder_path = UPLOAD_FOLDER + session_id + "/"
+    current_id = session_id
 
-        print(f"pic_amount: {pic_amount}, epoch_amount: {epoch_amount}, session_id: {session_id}")
+    upload_folder_path = os.path.join(UPLOAD_FOLDER, session_id)
+    os.makedirs(upload_folder_path, exist_ok=True)
 
-        # Ensure the session-specific upload folder exists
-        os.makedirs(upload_folder_path, exist_ok=True)
+    # Accept multiple files with the key 'images'
+    if 'images' not in request.files:
+        return jsonify({'error': 'No image files provided'}), 400
 
-        # Accept multiple files with the key 'images'
-        if 'images' not in request.files:
-            return jsonify({'error': 'No image files provided'}), 400
+    files = request.files.getlist('images')
+    print([file.filename for file in files])
+    if not files or all(f.filename == '' for f in files):
+        return jsonify({'error': 'No selected files'}), 400
 
-        files = request.files.getlist('images')
-        print([file.filename for file in files])
-        if not files or all(f.filename == '' for f in files):
-            return jsonify({'error': 'No selected files'}), 400
+    saved_files = []
+    i = 1
+    for file in files:
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            unique_filename = f"{i}_{filename}"
+            file_path = os.path.join(upload_folder_path, unique_filename)
+            file.save(file_path)
+            saved_files.append(unique_filename)
+            i += 1
+        else:
+            print(f"Skipping invalid file: {file.filename}")
 
-        saved_files = []
-        i = 1
-        for file in files:
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                #timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S%f')
-                unique_filename = f"{i}_{filename}"
-                file_path = os.path.join(upload_folder_path, unique_filename)
-                file.save(file_path)
-                saved_files.append(unique_filename)
-                i += 1
-            else:
-                print(f"Skipping invalid file: {file.filename}")
+    if not saved_files:
+        return jsonify({'error': 'No valid image files provided'}), 400
 
-        if not saved_files:
-            return jsonify({'error': 'No valid image files provided'}), 400
+    # Only now, after all images are uploaded, start processing
+    generate(session_id, pic_amount, epoch_amount)
 
-        generate(session_id, pic_amount, epoch_amount)
-
-        return redirect(f"/call_flag")
+    return redirect(f"/call_flag")
 
 @app.route('/download/<folder_name>', methods=['GET'])
 def download_folder(folder_name):
