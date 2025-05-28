@@ -10,11 +10,11 @@
     <div class="container">
         <h1>Upload Pictures</h1>
         <div id="progress-container" style="display: none; margin-top: 20px;" class="picture-progress-container">
-            <div class="progress-container" class="container">
+            <div class="progress-container">
                 <div id="progress-bar" class="progress-bar"></div>
             </div>
-            <div id="progress-text" style="margin-top: 10px; font-weight: bold;">Progress: 0%</div>
-            <div id="file-amount" style="margin-top: 5px; font-size: 1em;"></div>
+            <div id="progress-text">Progress: 0%</div>
+            <div id="file-amount"></div>
         </div>
         <div class="container">
             <form action="{{ url_for('picture_upload') }}" method="post" enctype="multipart/form-data" class="container">
