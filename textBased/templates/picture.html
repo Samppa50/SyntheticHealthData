@@ -53,6 +53,9 @@
         }
     });
 
+    let previousProgress = 0;
+    let resetCount = 0;
+
     function pollProgress() {
         fetch('/picture/progress')
             .then(response => response.json())
@@ -63,13 +66,17 @@
                 const progressText = document.getElementById('progress-text');
                 const fileAmount = data.file_amount || 0; // Use data from the response or default to 0
                 const filesAmount = document.getElementById('file-amount');
+                const roundedProgress = Math.round(progress);
                 if (progress > 0) {
                     progressContainer.style.display = "block";
                 }
-                const roundedProgress = Math.round(progress);
+                if (roundedProgress < previousProgress) {
+                    resetCount++;
+                }
+                previousProgress = roundedProgress;
                 progressBar.style.width = roundedProgress + "%";
                 progressText.textContent = "Progress: " + roundedProgress + "%";
-                filesAmount.textContent = `Total files: ${fileAmount}`;
+                filesAmount.textContent = `Files processed: ${resetCount}/${fileAmount}`;
                 if (roundedProgress < 100) {
                     setTimeout(pollProgress, 1000);
                 } else {
