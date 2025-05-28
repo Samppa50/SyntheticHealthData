@@ -254,3 +254,23 @@ input[type="number"] {
     -moz-appearance: textfield;
     appearance: none;
 }
+
+.picture-progress-container {
+    margin: 20px auto;
+    width: 80%;
+    background-color: #f3f3f3;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    height: 20px;
+    overflow: hidden;
+    display: block;
+}
+
+#progress-text,
+#file-amount {
+    text-align: center;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
