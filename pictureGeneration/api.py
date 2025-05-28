@@ -36,7 +36,6 @@ def upload_image():
     upload_folder_path = os.path.join(UPLOAD_FOLDER, session_id)
     os.makedirs(upload_folder_path, exist_ok=True)
 
-    # Accept multiple files with the key 'images'
     if 'images' not in request.files:
         return jsonify({'error': 'No image files provided'}), 400
 
@@ -61,7 +60,6 @@ def upload_image():
     if not saved_files:
         return jsonify({'error': 'No valid image files provided'}), 400
 
-    # Only now, after all images are uploaded, start processing
     generate(session_id, pic_amount, epoch_amount)
 
     return redirect(f"/call_flag")
@@ -79,10 +77,18 @@ def download_folder(folder_name):
     # Send the zip file
     response = send_file(zip_path, as_attachment=True)
 
-    # Optionally, clean up the zip after sending
-    #os.remove(zip_path)
+    os.remove(zip_path)
 
     return response
+
+@app.route('/user/data/delete', methods=['DELETE'])
+def delete_user_data():
+    global current_id
+    current_id = 404
+    shutil.rmtree(UPLOAD_FOLDER, ignore_errors=True)
+    print("User data deleted successfully.")
+    return jsonify({'message': 'User data deleted successfully.'})
+
 
 
 @app.route('/progress', methods=['GET'])

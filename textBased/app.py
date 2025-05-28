@@ -11,8 +11,9 @@ import time
 import requests
 import io
 
-
 app = Flask(__name__)
+
+file_amount = 0
 
 # Configure server-side session storage
 app.config['SESSION_TYPE'] = 'filesystem'  # Store session data in the filesystem
@@ -180,10 +181,15 @@ def delete():
 
 @app.route('/picture/progress')
 def picture_progress():
+    global file_amount
     url = "http://picture-generation:5002/progress"
     progress = requests.get(url)
+    json_progress = progress.json()
     print(f"Progress: {progress.json()}")
-    return jsonify(progress.json())
+    return jsonify({
+        "progress": json_progress.get("progress", 0),
+        "file_amount": file_amount
+    })
 
 
 @app.route('/picture/upload', methods=['POST'])
@@ -202,6 +208,10 @@ def picture_upload():
     files = request.files.getlist('files')
     if not files or files == [None]:
         return "No files selected", 400
+    
+    global file_amount
+    file_amount = len(files)
+    print(f"Number of files received: {file_amount}")
 
     results = []
     for file in files:
@@ -260,7 +270,8 @@ def picture_delete():
             shutil.rmtree(upload_folder, ignore_errors=True)
 
         # data still needs to be deleted from the picture-generation API
-
+        url = f"http://picture-generation:5002/user/data/delete"
+        response = requests.delete(url)
         session.clear()
     return redirect("/")
 
