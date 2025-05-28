@@ -13,7 +13,8 @@
             <div class="progress-container">
                 <div id="progress-bar" class="progress-bar"></div>
             </div>
-            <div id="progress-text" style="margin-top: 10px; font-weight: bold;">ETA: 0%</div>
+            <div id="progress-text" style="margin-top: 10px; font-weight: bold;">Progress: 0%</div>
+            <div id="file-amount" style="margin-top: 5px; font-size: 1em;"></div>
         </div>
         <div class="container">
             <form action="{{ url_for('picture_upload') }}" method="post" enctype="multipart/form-data" class="container">
@@ -60,12 +61,15 @@
                 const progressBar = document.getElementById('progress-bar');
                 const progressContainer = document.getElementById('progress-container');
                 const progressText = document.getElementById('progress-text');
+                const fileAmount = data.file_amount || 0; // Use data from the response or default to 0
+                const filesAmount = document.getElementById('file-amount');
                 if (progress > 0) {
                     progressContainer.style.display = "block";
                 }
                 const roundedProgress = Math.round(progress);
                 progressBar.style.width = roundedProgress + "%";
                 progressText.textContent = "Progress: " + roundedProgress + "%";
+                filesAmount.textContent = `Total files: ${fileAmount}`;
                 if (roundedProgress < 100) {
                     setTimeout(pollProgress, 1000);
                 } else {

@@ -36,7 +36,6 @@ def upload_image():
     upload_folder_path = os.path.join(UPLOAD_FOLDER, session_id)
     os.makedirs(upload_folder_path, exist_ok=True)
 
-    # Accept multiple files with the key 'images'
     if 'images' not in request.files:
         return jsonify({'error': 'No image files provided'}), 400
 
@@ -61,7 +60,6 @@ def upload_image():
     if not saved_files:
         return jsonify({'error': 'No valid image files provided'}), 400
 
-    # Only now, after all images are uploaded, start processing
     generate(session_id, pic_amount, epoch_amount)
 
     return redirect(f"/call_flag")
