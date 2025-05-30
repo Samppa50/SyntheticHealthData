@@ -7,7 +7,7 @@ import shutil
 
 app = Flask(__name__)
 
-# Config
+
 UPLOAD_FOLDER = 'uploads/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -25,7 +25,6 @@ def upload_image():
     global current_id
     global user_prosessing
 
-    # Access the extra fields sent from the other container
     pic_amount = request.form.get('pic-amount', type=int)
     epoch_amount = request.form.get('epoch-amount', type=int)
     session_id = request.form.get('session_id')
