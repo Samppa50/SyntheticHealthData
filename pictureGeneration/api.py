@@ -12,6 +12,7 @@ UPLOAD_FOLDER = 'uploads/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 current_id = 404
+user_prosessing = False
 
 # Ensure the folder exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -22,15 +23,17 @@ def allowed_file(filename):
 @app.route('/upload', methods=['POST'])
 def upload_image():
     global current_id
+    global user_prosessing
 
     # Access the extra fields sent from the other container
     pic_amount = request.form.get('pic-amount', type=int)
     epoch_amount = request.form.get('epoch-amount', type=int)
     session_id = request.form.get('session_id')
 
-    if progress != 0 and current_id != session_id:
+    if user_prosessing and current_id != session_id:
         return jsonify({'error': 'Another generation is in progress. Please wait until it finishes.'}), 403
 
+    user_prosessing = True
     current_id = session_id
 
     upload_folder_path = os.path.join(UPLOAD_FOLDER, session_id)
@@ -66,6 +69,8 @@ def upload_image():
 
 @app.route('/download/<folder_name>', methods=['GET'])
 def download_folder(folder_name):
+    global user_prosessing
+    user_prosessing = False
     folder_path = os.path.join('download', folder_name)
     if not os.path.exists(folder_path):
         return jsonify({'error': 'Folder not found'}), 404
