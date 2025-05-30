@@ -7,11 +7,12 @@ import shutil
 
 app = Flask(__name__)
 
-# Config
+
 UPLOAD_FOLDER = 'uploads/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 current_id = 404
+user_prosessing = False
 
 # Ensure the folder exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -22,15 +23,16 @@ def allowed_file(filename):
 @app.route('/upload', methods=['POST'])
 def upload_image():
     global current_id
+    global user_prosessing
 
-    # Access the extra fields sent from the other container
     pic_amount = request.form.get('pic-amount', type=int)
     epoch_amount = request.form.get('epoch-amount', type=int)
     session_id = request.form.get('session_id')
 
-    if progress != 0 and current_id != session_id:
+    if user_prosessing and current_id != session_id:
         return jsonify({'error': 'Another generation is in progress. Please wait until it finishes.'}), 403
 
+    user_prosessing = True
     current_id = session_id
 
     upload_folder_path = os.path.join(UPLOAD_FOLDER, session_id)
@@ -61,7 +63,7 @@ def upload_image():
         return jsonify({'error': 'No valid image files provided'}), 400
 
     generate(session_id, pic_amount, epoch_amount)
-
+    user_prosessing = False
     return redirect(f"/call_flag")
 
 @app.route('/download/<folder_name>', methods=['GET'])

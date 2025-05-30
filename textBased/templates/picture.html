@@ -48,7 +48,7 @@
                 uploadBtn.classList.add('disabled');
                 textPageBtn.disabled = true;
                 textPageBtn.classList.add('disabled');
-                pollProgress(); // Start polling when upload is submitted
+                pollProgress();
             });
         }
     });
@@ -64,7 +64,7 @@
                 const progressBar = document.getElementById('progress-bar');
                 const progressContainer = document.getElementById('progress-container');
                 const progressText = document.getElementById('progress-text');
-                const fileAmount = data.file_amount || 0; // Use data from the response or default to 0
+                const fileAmount = data.file_amount || 0;
                 const filesAmount = document.getElementById('file-amount');
                 const roundedProgress = Math.round(progress);
                 if (progress > 0) {
