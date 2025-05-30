@@ -64,13 +64,11 @@ def upload_image():
         return jsonify({'error': 'No valid image files provided'}), 400
 
     generate(session_id, pic_amount, epoch_amount)
-
+    user_prosessing = False
     return redirect(f"/call_flag")
 
 @app.route('/download/<folder_name>', methods=['GET'])
 def download_folder(folder_name):
-    global user_prosessing
-    user_prosessing = False
     folder_path = os.path.join('download', folder_name)
     if not os.path.exists(folder_path):
         return jsonify({'error': 'Folder not found'}), 404
