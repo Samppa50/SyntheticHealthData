@@ -15,6 +15,10 @@
             </div>
             <div id="progress-text">Progress: 0%</div>
             <div id="file-amount"></div>
+            <div>
+                <form action="{{ url_for('picture_stop') }}" method="post"></form>
+                <button id="picture-stop" class="button" type="submit">abort mission</button>
+            </div>
         </div>
         <div class="container">
             <form action="{{ url_for('picture_upload') }}" method="post" enctype="multipart/form-data" class="container">

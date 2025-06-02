@@ -279,6 +279,18 @@ def picture_delete():
         session.clear()
     return redirect("/")
 
+@app.route('/picture/stop', methods=['POST'])
+def picture_stop():
+    session_id = session.get('session_id', '')
+    if session_id:
+        # Call the picture-generation API to stop the generation
+        url = f"http://picture-generation:5002/stop"
+        response = requests.post(url, json={'session_id': session_id})
+        if response.status_code == 200:
+            print("Generation stopped successfully.")
+        else:
+            print(f"Failed to stop generation: {response.text}")
+    return redirect("/")
 
 @app.route('/picture', methods=['GET', 'POST'])
 def picture():

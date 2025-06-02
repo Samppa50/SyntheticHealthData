@@ -100,6 +100,14 @@ def get_progress_route():
     progress = get_progress()
     return jsonify({'progress': progress})
 
+@app.route('/stop', methods=['POST'])
+def stop_generation():
+    global user_prosessing
+    user_prosessing = False
+    delete_user_data()
+    print("Generation stopped.")
+    return jsonify({'message': 'Generation stopped successfully.'})
+
 if __name__ == '__main__':
     app.run(debug=True, port=5002, host='0.0.0.0')
 
