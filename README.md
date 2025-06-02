@@ -1,7 +1,7 @@
 
 # Synthetic health data
 
-connecting requires schools source network access. 
+Connecting requires schools source network access. 
 http://172.16.5.51:5001/
 
 Documentation requires tuni login. 
