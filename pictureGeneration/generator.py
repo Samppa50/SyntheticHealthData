@@ -32,7 +32,7 @@ class CustomImageDataset(Dataset):
         image = Image.open(img_path).convert("RGB")
         if self.transform:
             image = self.transform(image)
-        return image 
+        return image
 
 
 
@@ -193,7 +193,7 @@ def generate(session_id, pic_amount, epoch_amount):
                 print(f"[{epoch}/{num_epochs}][{i}/{len(dataloader)}] "
                     f"D Loss: {d_loss.item():.4f} G Loss: {g_loss.item():.4f} "
                     f"D(real): {real_output.mean().item():.4f} D(fake): {fake_output.mean().item():.4f}")
-    
+
         # Save samples
         if epoch % 100 == 0:
             with torch.no_grad():
@@ -205,5 +205,9 @@ def generate(session_id, pic_amount, epoch_amount):
         set_progress(epoch / num_epochs * 100)
     set_progress(0)
 
-        
+    # Save the generator model
+    model_save_path = os.path.join("models", f"generator_{session_id}.pth")
+    os.makedirs("models", exist_ok=True)
+    torch.save(netG.state_dict(), model_save_path)
+
     return 0
