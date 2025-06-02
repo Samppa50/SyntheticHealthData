@@ -28,6 +28,7 @@ def upload_image():
     pic_amount = request.form.get('pic-amount', type=int)
     epoch_amount = request.form.get('epoch-amount', type=int)
     session_id = request.form.get('session_id')
+    generation_type = request.form.get('generation-type', type=int)
 
     if user_prosessing and current_id != session_id:
         return jsonify({'error': 'Another generation is in progress. Please wait until it finishes.'}), 403
@@ -62,7 +63,7 @@ def upload_image():
     if not saved_files:
         return jsonify({'error': 'No valid image files provided'}), 400
 
-    generate(session_id, pic_amount, epoch_amount)
+    generate(session_id, pic_amount, epoch_amount, generation_type)
     user_prosessing = False
     return redirect(f"/call_flag")
 

@@ -37,13 +37,18 @@ class CustomImageDataset(Dataset):
 
 
 
-def generate(session_id, pic_amount, epoch_amount):
+def generate(session_id, pic_amount, epoch_amount, generation_type):
 
     print("Hello from generator.py")
 
     print("Session ID:", session_id)
     print("Picture Amount:", pic_amount)
     print("Epoch Amount:", epoch_amount)
+    print("Generation Type:", generation_type)
+    # Generation type 0 = start training new model
+    # Generation type 1 = continue training existing hand model
+    # new generation types can be added later
+
 
     print(torch.cuda.is_available())
 
