@@ -199,6 +199,9 @@ def picture_upload():
     session['session_id'] = session_id
     pic_amount = request.form.get("pic-amount", default=10, type=int)
     epoch_amount = request.form.get("epoch-amount", default=10, type=int)
+    generation_type = request.form.get("generation-type", default=0, type=int)
+
+    print(f'Using generation type: {generation_type}')
 
     upload_folder = f'Files/pictures/uploads/{session_id}'
     if not os.path.exists(upload_folder):
@@ -208,7 +211,7 @@ def picture_upload():
     files = request.files.getlist('files')
     if not files or files == [None]:
         return "No files selected", 400
-    
+
     global file_amount
     file_amount = len(files)
     print(f"Number of files received: {file_amount}")
@@ -227,7 +230,8 @@ def picture_upload():
                 api_data = {
                     'pic-amount': pic_amount,
                     'epoch-amount': epoch_amount,
-                    'session_id': session_id
+                    'session_id': session_id,
+                    'generation_type': generation_type
                 }
                 response = requests.post(url, files=api_files, data=api_data)
                 results.append({'filename': sanitized_filename, 'status': response.status_code})
