@@ -8,6 +8,19 @@ import os
 from PIL import Image
 
 progress_bar = 0
+stop_prosessing = False
+
+def get_stop():
+    global stop_prosessing
+    return stop_prosessing
+
+def set_stop(value):
+    global stop_prosessing
+    stop_prosessing = value
+    if not value:
+        print("User processing stopped.")
+
+
 
 def get_progress():
     return progress_bar
@@ -208,6 +221,11 @@ def generate(session_id, pic_amount, epoch_amount, generation_type):
                 save_image(fake_images, os.path.join(output_dir, f"generated_epoch_{epoch+1}.png"), normalize=True)
 
         set_progress(epoch / num_epochs * 100)
+        if get_stop():
+            print("User stopped processing.")
+            set_progress(0)
+            return -1
+
     set_progress(0)
 
     # Save the generator model
