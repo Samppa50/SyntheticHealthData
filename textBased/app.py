@@ -179,6 +179,16 @@ def delete():
         session.clear()
     return redirect("/")
 
+@app.route('/stop')
+def stop():
+    session_id = session.get('session_id', '')
+    if session_id:
+        update_progress(session_id, 0)
+        delete()
+    return redirect("/")
+    #actual stop here
+
+
 @app.route('/picture/progress')
 def picture_progress():
     global file_amount

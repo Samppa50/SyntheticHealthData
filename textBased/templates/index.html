@@ -24,6 +24,9 @@
             <div id="progress-bar" class="progress-bar" style="width: 0%;"></div>
         </div>
         <p id="eta" style="text-align: center; font-size: 14px; margin-top: 10px; display: none;">ETA: Calculating...</p>
+        <form action="{{ url_for('stop') }}">
+            <button class="button" id="stop-button" style="display: none;">Stop</button>
+        </form>
 
         <div class="form">
             {% if items %}
@@ -85,10 +88,12 @@
                     const progressBar = document.getElementById('progress-bar');
                     const progressContainer = document.getElementById('progress-container');
                     const etaElement = document.getElementById('eta');
+                    const stopButton = document.getElementById('stop-button');
 
                     if (data.progress > 0) {
                         progressContainer.style.display = "block";
                         etaElement.style.display = "block";
+                        stopButton.style.display = "block";
 
 
                         if (!startTime) {
