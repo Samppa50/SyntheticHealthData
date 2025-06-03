@@ -1,6 +1,6 @@
 from flask import Flask, render_template, url_for, request, redirect, send_from_directory, session, send_file, jsonify
 from werkzeug.utils import secure_filename
-from synthetic import main, generate_file, get_progress, update_progress
+from synthetic import main, generate_file, get_progress, update_progress, request_stop
 from Correlation_data import correlation, median_mean
 import os
 import shutil
@@ -183,6 +183,7 @@ def delete():
 def stop():
     session_id = session.get('session_id', '')
     if session_id:
+        request_stop(session_id)
         update_progress(session_id, 0)
         delete()
     return redirect("/")
