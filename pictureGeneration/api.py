@@ -109,6 +109,12 @@ def stop_generation():
     print("Generation stopped.")
     return jsonify({'message': 'Generation stopped successfully.'})
 
+@app.route('/reset/stop', methods=['GET', 'POST'])
+def reset_stop():
+    set_stop(False)
+    print("Stop processing reset.")
+    return jsonify({'message': 'Stop processing reset successfully.'})
+
 if __name__ == '__main__':
     app.run(debug=True, port=5002, host='0.0.0.0')
 

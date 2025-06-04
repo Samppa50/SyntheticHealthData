@@ -206,6 +206,7 @@ def picture_progress():
 @app.route('/picture/upload', methods=['POST'])
 def picture_upload():
     url = "http://picture-generation:5002/upload"
+    reset_stop_url = "http://picture-generation:5002/reset/stop"
     session_id = session.get('session_id', str(uuid.uuid4()))
     session['session_id'] = session_id
     pic_amount = request.form.get("pic-amount", default=10, type=int)
@@ -213,6 +214,8 @@ def picture_upload():
     generation_type = request.form.get("generation-type", default=0, type=int)
 
     print(f'Using generation type: {generation_type}')
+
+    response = requests.post(reset_stop_url, json={'session_id': session_id})
 
     upload_folder = f'Files/pictures/uploads/{session_id}'
     if not os.path.exists(upload_folder):
