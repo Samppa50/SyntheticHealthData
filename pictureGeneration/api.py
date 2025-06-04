@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, jsonify, send_file, redirect
 from werkzeug.utils import secure_filename
 from datetime import datetime
-from generator import generate, get_progress
+from generator import generate, get_progress, set_stop
 import shutil
 
 app = Flask(__name__)
@@ -104,6 +104,7 @@ def get_progress_route():
 def stop_generation():
     global user_prosessing
     user_prosessing = False
+    set_stop(True)
     delete_user_data()
     print("Generation stopped.")
     return jsonify({'message': 'Generation stopped successfully.'})

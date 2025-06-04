@@ -17,8 +17,7 @@ def get_stop():
 def set_stop(value):
     global stop_prosessing
     stop_prosessing = value
-    if not value:
-        print("User processing stopped.")
+    print(f"Stop processing set to: {value}")
 
 
 
@@ -182,6 +181,11 @@ def generate(session_id, pic_amount, epoch_amount, generation_type):
     # Training
     num_epochs = epoch_amount
     for epoch in range(num_epochs):
+        if get_stop():
+            print("User stopped processing.")
+            set_progress(0)
+            return -1
+        
         for i, data in enumerate(dataloader):
             real_data = data.to(device)
             batch_size = real_data.size(0)
@@ -221,10 +225,6 @@ def generate(session_id, pic_amount, epoch_amount, generation_type):
                 save_image(fake_images, os.path.join(output_dir, f"generated_epoch_{epoch+1}.png"), normalize=True)
 
         set_progress(epoch / num_epochs * 100)
-        if get_stop():
-            print("User stopped processing.")
-            set_progress(0)
-            return -1
 
     set_progress(0)
 
