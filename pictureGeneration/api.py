@@ -100,7 +100,7 @@ def get_progress_route():
     progress = get_progress()
     return jsonify({'progress': progress})
 
-@app.route('/stop', methods=['POST'])
+@app.route('/stop', methods=['GET', 'POST'])
 def stop_generation():
     global user_prosessing
     user_prosessing = False
