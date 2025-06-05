@@ -34,6 +34,7 @@ def cleanup_old_sessions():
         session_dirs = [
             'Files/uploads',
             'Files/downloads',
+            'Files/pictures/uploads',
             'static/images',
             './flask_session'
         ]
@@ -187,7 +188,6 @@ def stop():
         update_progress(session_id, 0)
         delete()
     return redirect("/")
-    #actual stop here
 
 
 @app.route('/picture/progress')
