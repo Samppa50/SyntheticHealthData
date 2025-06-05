@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, jsonify, send_file, redirect
 from werkzeug.utils import secure_filename
 from datetime import datetime
-from generator import generate, get_progress
+from generator import generate, get_progress, set_stop
 import shutil
 
 app = Flask(__name__)
@@ -28,6 +28,7 @@ def upload_image():
     pic_amount = request.form.get('pic-amount', type=int)
     epoch_amount = request.form.get('epoch-amount', type=int)
     session_id = request.form.get('session_id')
+    generation_type = request.form.get('generation-type', type=int)
 
     if user_prosessing and current_id != session_id:
         return jsonify({'error': 'Another generation is in progress. Please wait until it finishes.'}), 403
@@ -62,7 +63,7 @@ def upload_image():
     if not saved_files:
         return jsonify({'error': 'No valid image files provided'}), 400
 
-    generate(session_id, pic_amount, epoch_amount)
+    generate(session_id, pic_amount, epoch_amount, generation_type)
     user_prosessing = False
     return redirect(f"/call_flag")
 
@@ -98,6 +99,21 @@ def get_progress_route():
     global progress
     progress = get_progress()
     return jsonify({'progress': progress})
+
+@app.route('/stop', methods=['GET', 'POST'])
+def stop_generation():
+    global user_prosessing
+    user_prosessing = False
+    set_stop(True)
+    delete_user_data()
+    print("Generation stopped.")
+    return jsonify({'message': 'Generation stopped successfully.'})
+
+@app.route('/reset/stop', methods=['GET', 'POST'])
+def reset_stop():
+    set_stop(False)
+    print("Stop processing reset.")
+    return jsonify({'message': 'Stop processing reset successfully.'})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5002, host='0.0.0.0')

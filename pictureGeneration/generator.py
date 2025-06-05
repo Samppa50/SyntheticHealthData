@@ -8,6 +8,18 @@ import os
 from PIL import Image
 
 progress_bar = 0
+stop_prosessing = False
+
+def get_stop():
+    global stop_prosessing
+    return stop_prosessing
+
+def set_stop(value):
+    global stop_prosessing
+    stop_prosessing = value
+    print(f"Stop processing set to: {value}")
+
+
 
 def get_progress():
     return progress_bar
@@ -32,18 +44,23 @@ class CustomImageDataset(Dataset):
         image = Image.open(img_path).convert("RGB")
         if self.transform:
             image = self.transform(image)
-        return image 
+        return image
 
 
 
 
-def generate(session_id, pic_amount, epoch_amount):
+def generate(session_id, pic_amount, epoch_amount, generation_type):
 
     print("Hello from generator.py")
 
     print("Session ID:", session_id)
     print("Picture Amount:", pic_amount)
     print("Epoch Amount:", epoch_amount)
+    print("Generation Type:", generation_type)
+    # Generation type 0 = start training new model
+    # Generation type 1 = continue training existing hand model
+    # new generation types can be added later
+
 
     print(torch.cuda.is_available())
 
@@ -164,6 +181,11 @@ def generate(session_id, pic_amount, epoch_amount):
     # Training
     num_epochs = epoch_amount
     for epoch in range(num_epochs):
+        if get_stop():
+            print("User stopped processing.")
+            set_progress(0)
+            return -1
+        
         for i, data in enumerate(dataloader):
             real_data = data.to(device)
             batch_size = real_data.size(0)
@@ -193,7 +215,7 @@ def generate(session_id, pic_amount, epoch_amount):
                 print(f"[{epoch}/{num_epochs}][{i}/{len(dataloader)}] "
                     f"D Loss: {d_loss.item():.4f} G Loss: {g_loss.item():.4f} "
                     f"D(real): {real_output.mean().item():.4f} D(fake): {fake_output.mean().item():.4f}")
-    
+
         # Save samples
         if epoch % 100 == 0:
             with torch.no_grad():
@@ -203,7 +225,12 @@ def generate(session_id, pic_amount, epoch_amount):
                 save_image(fake_images, os.path.join(output_dir, f"generated_epoch_{epoch+1}.png"), normalize=True)
 
         set_progress(epoch / num_epochs * 100)
+
     set_progress(0)
 
-        
+    # Save the generator model
+    model_save_path = os.path.join("models", f"generator_{session_id}.pth")
+    os.makedirs("models", exist_ok=True)
+    torch.save(netG.state_dict(), model_save_path)
+
     return 0

@@ -11,6 +11,15 @@ import pickle
 from flask import session
 
 progress_data = {'value': 0}
+stop_flag = {}
+
+def stop_progress(session_id):
+    print("Checking stop flag for session_id:", session_id)
+    return stop_flag.get(session_id, False)
+
+def request_stop(session_id):
+    stop_flag[session_id] = True
+    print(f"Stopping progress for session_id: {session_id}")
 
 # Updates the progress bar
 def update_progress(session_id, value):
@@ -57,7 +66,7 @@ def main(session_id ,name):
         data = pd.read_csv(csv_name)
     else:
         data = pd.read_csv('Files/uploads/'+ session_id+ '/' + name)
-        
+
 
     #Converting non numeric values into numbers
     col_names = list(data.columns)
@@ -69,10 +78,10 @@ def main(session_id ,name):
 
     #Generating the synthetic file
 def generate_file(col_values, line_amount, epoch_amount, name, session_id):
-    
+
 
     data = pd.read_csv('Files/uploads/'+ session_id+ '/' + name, encoding="ISO-8859-1", on_bad_lines='skip')
-    
+
     df_decimal_source = pd.read_csv('Files/uploads/'+ session_id+ '/' + name, dtype=str, encoding="ISO-8859-1", on_bad_lines='skip')
 
     #counts the decimals that are used in the synthetic data
@@ -138,16 +147,16 @@ def generate_file(col_values, line_amount, epoch_amount, name, session_id):
     ignore_zero = [col for col, flag in zip(data.columns, list(map(int, col_ignore_zero))) if flag == 1]
     data[ignore_zero] = data[ignore_zero].replace(0, np.nan)
     data = data.dropna(subset=ignore_zero)
- 
+
     # Replaces any blank values with nan values and then turns the nan values into 0
     data.replace(r'^\s*$', np.nan, regex=True, inplace=True)
     data.fillna(0, inplace=True)
-    
+
     # Load the datasets
     real_df = data
-    
+
     set_df1(data, session_id)
-    
+
     scaler = MinMaxScaler()
     data_scaled = scaler.fit_transform(data)
 
@@ -204,6 +213,9 @@ def generate_file(col_values, line_amount, epoch_amount, name, session_id):
     fake = np.zeros((batch_size, 1))
 
     for epoch in range(epochs):
+        if stop_progress(session_id):
+            print("Generation stopped by user request.")
+            return None
         # Train discriminator
         discriminator.trainable = True
         idx = np.random.randint(0, data_scaled.shape[0], batch_size)

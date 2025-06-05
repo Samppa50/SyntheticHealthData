@@ -15,6 +15,11 @@
             </div>
             <div id="progress-text">Progress: 0%</div>
             <div id="file-amount"></div>
+            <div>
+                <form action="{{ url_for('picture_stop') }}" method="post">
+                <button id="picture-stop" class="button" type="submit">abort mission</button>
+                </form>
+            </div>
         </div>
         <div class="container">
             <form action="{{ url_for('picture_upload') }}" method="post" enctype="multipart/form-data" class="container">
@@ -25,6 +30,13 @@
                 <div class="container">
                     <h2>wanted epoch amount</h2>
                     <input type="number" name="epoch-amount" placeholder="Enter number of wanted epochs" required class="custom-input">
+                </div>
+                <div class="container">
+                    <h2>Used generating type</h2>
+                    <select name="generation-type" required class="custom-input">
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                    </select>
                 </div>
                 <div class="container-row" style="padding-top: 25px;">
                     <input type="file" name="files" accept="image/*" multiple webkitdirectory directory>

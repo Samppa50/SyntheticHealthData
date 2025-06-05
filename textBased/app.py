@@ -1,6 +1,6 @@
 from flask import Flask, render_template, url_for, request, redirect, send_from_directory, session, send_file, jsonify
 from werkzeug.utils import secure_filename
-from synthetic import main, generate_file, get_progress, update_progress
+from synthetic import main, generate_file, get_progress, update_progress, request_stop
 from Correlation_data import correlation, median_mean
 import os
 import shutil
@@ -179,6 +179,17 @@ def delete():
         session.clear()
     return redirect("/")
 
+@app.route('/stop')
+def stop():
+    session_id = session.get('session_id', '')
+    if session_id:
+        request_stop(session_id)
+        update_progress(session_id, 0)
+        delete()
+    return redirect("/")
+    #actual stop here
+
+
 @app.route('/picture/progress')
 def picture_progress():
     global file_amount
@@ -195,10 +206,16 @@ def picture_progress():
 @app.route('/picture/upload', methods=['POST'])
 def picture_upload():
     url = "http://picture-generation:5002/upload"
+    reset_stop_url = "http://picture-generation:5002/reset/stop"
     session_id = session.get('session_id', str(uuid.uuid4()))
     session['session_id'] = session_id
     pic_amount = request.form.get("pic-amount", default=10, type=int)
     epoch_amount = request.form.get("epoch-amount", default=10, type=int)
+    generation_type = request.form.get("generation-type", default=0, type=int)
+
+    print(f'Using generation type: {generation_type}')
+
+    response = requests.post(reset_stop_url, json={'session_id': session_id})
 
     upload_folder = f'Files/pictures/uploads/{session_id}'
     if not os.path.exists(upload_folder):
@@ -208,7 +225,7 @@ def picture_upload():
     files = request.files.getlist('files')
     if not files or files == [None]:
         return "No files selected", 400
-    
+
     global file_amount
     file_amount = len(files)
     print(f"Number of files received: {file_amount}")
@@ -227,7 +244,8 @@ def picture_upload():
                 api_data = {
                     'pic-amount': pic_amount,
                     'epoch-amount': epoch_amount,
-                    'session_id': session_id
+                    'session_id': session_id,
+                    'generation_type': generation_type
                 }
                 response = requests.post(url, files=api_files, data=api_data)
                 results.append({'filename': sanitized_filename, 'status': response.status_code})
@@ -275,6 +293,17 @@ def picture_delete():
         session.clear()
     return redirect("/")
 
+@app.route('/picture/stop', methods=['POST'])
+def picture_stop():
+    session_id = session.get('session_id', '')
+    # Call the picture-generation API to stop the generation
+    url = f"http://picture-generation:5002/stop"
+    response = requests.post(url, json={'session_id': session_id})
+    if response.status_code == 200:
+        print("Generation stopped successfully.")
+    else:
+        print(f"Failed to stop generation: {response.text}")
+    return redirect("/")
 
 @app.route('/picture', methods=['GET', 'POST'])
 def picture():
