@@ -231,27 +231,25 @@ def picture_upload():
     print(f"Number of files received: {file_amount}")
 
     results = []
+    api_files = []
     for file in files:
         if file and file.filename:
             sanitized_filename = secure_filename(file.filename.replace(" ", "_"))
             file_path = os.path.join(upload_folder, sanitized_filename)
             file.save(file_path)
             session['file_name'] = sanitized_filename
+            api_files.append(('images', (sanitized_filename, open(file_path, 'rb'), file.mimetype)))
 
-            # Send each image to the picture-generation API
-            with open(file_path, 'rb') as f:
-                api_files = {'images': f}
-                api_data = {
-                    'pic-amount': pic_amount,
-                    'epoch-amount': epoch_amount,
-                    'session_id': session_id,
-                    'generation_type': generation_type
-                }
-                response = requests.post(url, files=api_files, data=api_data)
-                results.append({'filename': sanitized_filename, 'status': response.status_code})
+    api_data = {
+        'pic-amount': pic_amount,
+        'epoch-amount': epoch_amount,
+        'session_id': session_id,
+        'generation_type': generation_type
+    }
+    response = requests.post(url, files=api_files, data=api_data)
 
-            if response.status_code == 403:
-                return "Forbidden: Server is busy at the moment.", 403
+    if response.status_code == 403:
+        return "Forbidden: Server is busy at the moment.", 403
 
     #folder_name = session.get('session_id', str(uuid.uuid4()))
     return redirect(url_for('picture_ready'))
