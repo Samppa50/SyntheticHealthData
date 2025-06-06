@@ -88,7 +88,7 @@
                 previousProgress = roundedProgress;
                 progressBar.style.width = roundedProgress + "%";
                 progressText.textContent = "Progress: " + roundedProgress + "%";
-                filesAmount.textContent = `Files processed: ${resetCount}/${fileAmount}`;
+                filesAmount.textContent = `Files uploaded ${fileAmount}`;
                 if (roundedProgress < 100) {
                     setTimeout(pollProgress, 1000);
                 } else {
