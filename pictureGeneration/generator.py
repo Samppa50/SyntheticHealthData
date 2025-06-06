@@ -233,4 +233,14 @@ def generate(session_id, pic_amount, epoch_amount, generation_type):
     os.makedirs("models", exist_ok=True)
     torch.save(netG.state_dict(), model_save_path)
 
+    # Generate and save pic_amount images after training
+    output_dir = os.path.join("download", str(session_id))
+    os.makedirs(output_dir, exist_ok=True)
+    netG.eval()
+    with torch.no_grad():
+        for idx in range(1, pic_amount + 1):
+            noise = torch.randn(1, nz, 1, 1, device=device)
+            fake_img = netG(noise).detach().cpu()
+            save_image(fake_img, os.path.join(output_dir, f"generated_{idx}.png"), normalize=True)
+
     return 0
