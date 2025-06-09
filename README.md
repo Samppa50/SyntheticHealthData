@@ -16,6 +16,9 @@ front page
 csv data uploaded
 <img width="1000" alt="Image" src="https://github.com/user-attachments/assets/2fe416f4-a45b-4cf6-a880-74f4a0fcbb5e" />
 
+parametes chosen and ready to start processing
+<img width="1000" alt="Image" src="https://github.com/user-attachments/assets/2e8e3563-6cb0-438e-8bd3-f1a15d2c21fb" />
+
 ## Authors
 
 - [@Samppa50](https://github.com/Samppa50)
