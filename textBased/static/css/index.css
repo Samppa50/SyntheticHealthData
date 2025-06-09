@@ -272,3 +272,8 @@ input[type="number"] {
     -moz-appearance: textfield;
     appearance: none;
 }
+
+.centered {
+    display: flex;
+    justify-content: center;
+}
