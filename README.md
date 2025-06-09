@@ -11,7 +11,7 @@ https://tuni-my.sharepoint.com/:w:/g/personal/sami_silvan_tuni_fi/EcXCArbwb7RCrl
 ## csv/xlsx data generation
 
 front page
-![screenshot1]([https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png](https://github.com/Samppa50/SyntheticHealthData/blob/main/readmePics/screenshot1.png) "Front page")
+<img width="1000" alt="Image" src="https://github.com/user-attachments/assets/e579bf7a-51e2-4035-9167-db2e889a19c7" />
 
 ## Authors
 
