@@ -244,7 +244,7 @@ def picture_upload():
         'pic-amount': pic_amount,
         'epoch-amount': epoch_amount,
         'session_id': session_id,
-        'generation_type': generation_type
+        'generation-type': generation_type
     }
     response = requests.post(url, files=api_files, data=api_data)
 

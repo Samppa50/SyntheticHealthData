@@ -24,18 +24,18 @@
         <div class="container">
             <form action="{{ url_for('picture_upload') }}" method="post" enctype="multipart/form-data" class="container">
                 <div class="container">
-                    <h2>wanted picture amount</h2>
+                    <h2>Wanted picture amount</h2>
                     <input type="number" name="pic-amount" placeholder="Enter number of wanted pictures" required class="custom-input">
                 </div>
                 <div class="container">
-                    <h2>wanted epoch amount</h2>
+                    <h2>Wanted epoch amount</h2>
                     <input type="number" name="epoch-amount" placeholder="Enter number of wanted epochs" required class="custom-input">
                 </div>
                 <div class="container">
                     <h2>Used generating type</h2>
                     <select name="generation-type" required class="custom-input">
-                        <option value="0">0</option>
-                        <option value="1">1</option>
+                        <option value="0">New model</option>
+                        <option value="1">Hand model</option>
                     </select>
                 </div>
                 <div class="container-row" style="padding-top: 25px;">

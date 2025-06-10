@@ -64,6 +64,10 @@ def generate(session_id, pic_amount, epoch_amount, generation_type):
 
     print(torch.cuda.is_available())
 
+    model_path = os.path.join("models", "hand_model.pth")
+    os.makedirs("models", exist_ok=True)
+
+
     class Generator(nn.Module):
         def __init__(self, nz, ngf, nc):
             super(Generator, self).__init__()
@@ -163,6 +167,12 @@ def generate(session_id, pic_amount, epoch_amount, generation_type):
     netG.apply(weights_init)
     netD.apply(weights_init)
 
+    if generation_type == 1:
+        print(f"Loading existing generator weights from {model_path}")
+        netG.load_state_dict(torch.load(model_path, map_location=device))
+    else:
+        print("Starting with a new generator model.")
+
     # Optimizers
     optimizerD = optim.Adam(netD.parameters(), lr=0.0002, betas=(0.0, 0.9))
     optimizerG = optim.Adam(netG.parameters(), lr=0.0002, betas=(0.0, 0.9))
@@ -229,9 +239,9 @@ def generate(session_id, pic_amount, epoch_amount, generation_type):
     set_progress(0)
 
     # Save the generator model
-    model_save_path = os.path.join("models", f"generator_{session_id}.pth")
-    os.makedirs("models", exist_ok=True)
-    torch.save(netG.state_dict(), model_save_path)
+    #model_save_path = os.path.join("models", f"generator_{session_id}.pth")
+    #os.makedirs("models", exist_ok=True)
+    #torch.save(netG.state_dict(), model_save_path)
 
     # Generate and save pic_amount images after training
     output_dir = os.path.join("download", str(session_id))
