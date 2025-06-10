@@ -67,11 +67,6 @@ def generate(session_id, pic_amount, epoch_amount, generation_type):
     model_path = os.path.join("models", "hand_model.pth")
     os.makedirs("models", exist_ok=True)
 
-    if generation_type == 1 and os.path.exists(model_path):
-        print(f"Loading existing generator weights from {model_path}")
-        netG.load_state_dict(torch.load(model_path, map_location=device))
-    else:
-        print("Starting with a new generator model.")
 
     class Generator(nn.Module):
         def __init__(self, nz, ngf, nc):
@@ -171,6 +166,12 @@ def generate(session_id, pic_amount, epoch_amount, generation_type):
     netD = Discriminator(nc, ndf).to(device)
     netG.apply(weights_init)
     netD.apply(weights_init)
+
+    if generation_type == 1:
+        print(f"Loading existing generator weights from {model_path}")
+        netG.load_state_dict(torch.load(model_path, map_location=device))
+    else:
+        print("Starting with a new generator model.")
 
     # Optimizers
     optimizerD = optim.Adam(netD.parameters(), lr=0.0002, betas=(0.0, 0.9))

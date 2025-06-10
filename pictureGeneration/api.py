@@ -30,6 +30,8 @@ def upload_image():
     session_id = request.form.get('session_id')
     generation_type = request.form.get('generation-type', type=int)
 
+    print("generation_type app.py:", generation_type)
+
     if user_prosessing and current_id != session_id:
         return jsonify({'error': 'Another generation is in progress. Please wait until it finishes.'}), 403
 
