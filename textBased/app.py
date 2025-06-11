@@ -309,7 +309,15 @@ def picture_gif():
     gif_url = "http://192.168.1.111:5002/gif/download"
     resp = requests.get(gif_url, stream=True)
     if resp.status_code == 200:
-        return Response(resp.content, mimetype='image/gif')
+        print("GIF download started")
+        gifs_dir = os.path.join('static', 'gifs')
+        os.makedirs(gifs_dir, exist_ok=True)
+        gif_path = os.path.join(gifs_dir, 'latest.gif')
+        with open(gif_path, 'wb') as f:
+            for chunk in resp.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
+        return send_file(gif_path, mimetype='image/gif')
     else:
         return "GIF not found", 404
 
