@@ -117,6 +117,14 @@ def reset_stop():
     print("Stop processing reset.")
     return jsonify({'message': 'Stop processing reset successfully.'})
 
+@app.route('/gif/download', methods=['GET'])
+def download_gif():
+    gif_path = 'gifs/generated/animated.gif'
+    if not os.path.exists(gif_path):
+        return jsonify({'error': 'GIF not found'}), 404
+
+    return send_file(gif_path, as_attachment=True)
+
 if __name__ == '__main__':
     app.run(debug=True, port=5002, host='0.0.0.0')
 

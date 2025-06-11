@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect, send_from_directory, session, send_file, jsonify
+from flask import Flask, render_template, url_for, request, redirect, send_from_directory, session, send_file, jsonify, Response
 from werkzeug.utils import secure_filename
 from synthetic import main, generate_file, get_progress, update_progress, request_stop
 from Correlation_data import correlation, median_mean
@@ -303,12 +303,33 @@ def picture_stop():
         print(f"Failed to stop generation: {response.text}")
     return redirect("/")
 
+@app.route('/picture/gif')
+def picture_gif():
+    gif_url = "http://192.168.1.111:5002/gif/download"
+    resp = requests.get(gif_url, stream=True)
+    print("GIF status code:", resp.status_code)
+    print("Saving to:", os.path.abspath('static/gifs/latest.gif'))
+    if resp.status_code == 200:
+        gifs_dir = os.path.join('static', 'gifs')
+        os.makedirs(gifs_dir, exist_ok=True)
+        gif_path = os.path.join(gifs_dir, 'latest.gif')
+        with open(gif_path, 'wb') as f:
+            for chunk in resp.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
+        print("GIF saved!")
+        return "Success", 200
+    else:
+        print("GIF not found at API.")
+        return "GIF not found", 404
+
 @app.route('/picture', methods=['GET', 'POST'])
 def picture():
     return render_template("picture.html")
 
 @app.route('/picture/ready', methods=['GET', 'POST'])
 def picture_ready():
+    picture_gif()
     return render_template("pictureReady.html")
 
 app.run(debug=True, port=5001, host='0.0.0.0')
