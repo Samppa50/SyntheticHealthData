@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision.utils import save_image, make_grid
 import os
 from PIL import Image
+from gifmaker import make_gif
 
 progress_bar = 0
 stop_prosessing = False
@@ -230,9 +231,9 @@ def generate(session_id, pic_amount, epoch_amount, generation_type):
         if epoch % 100 == 0:
             with torch.no_grad():
                 fake_images = netG(torch.randn(64, nz, 1, 1, device=device)).detach().cpu()
-                output_dir = os.path.join("download", str(session_id))
-                os.makedirs(output_dir, exist_ok=True)
-                save_image(fake_images, os.path.join(output_dir, f"generated_epoch_{epoch+1}.png"), normalize=True)
+                output_dir_epoch = os.path.join("gifs/epochs/")
+                os.makedirs(output_dir_epoch, exist_ok=True)
+                save_image(fake_images, os.path.join(output_dir_epoch, f"generated_epoch_{epoch+1}.png"), normalize=True)
 
         set_progress(epoch / num_epochs * 100)
 
@@ -252,5 +253,8 @@ def generate(session_id, pic_amount, epoch_amount, generation_type):
             noise = torch.randn(1, nz, 1, 1, device=device)
             fake_img = netG(noise).detach().cpu()
             save_image(fake_img, os.path.join(output_dir, f"generated_{idx}.png"), normalize=True)
+
+    make_gif("gifs/epochs/", "gifs/generated/animated.gif", duration=1000)
+    print("Generation completed successfully.")
 
     return 0
