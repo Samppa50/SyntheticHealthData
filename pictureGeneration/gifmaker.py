@@ -13,8 +13,8 @@ def make_gif(image_folder, output_gif, duration=1000):
             output_gif,
             save_all=True,
             append_images=frames[1:],
-            duration=duration, 
-            loop=1
+            duration=duration,
+            loop=0
         )
         print(f"GIF saved to {output_gif}")
         return True
