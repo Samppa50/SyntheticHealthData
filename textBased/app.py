@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect, send_from_directory, session, send_file, jsonify
+from flask import Flask, render_template, url_for, request, redirect, send_from_directory, session, send_file, jsonify, Response
 from werkzeug.utils import secure_filename
 from synthetic import main, generate_file, get_progress, update_progress, request_stop
 from Correlation_data import correlation, median_mean
@@ -302,6 +302,16 @@ def picture_stop():
     else:
         print(f"Failed to stop generation: {response.text}")
     return redirect("/")
+
+@app.route('/picture/gif')
+def picture_gif():
+    # Replace with the correct host/IP if needed
+    gif_url = "http://192.168.1.111:5002/gif/download"
+    resp = requests.get(gif_url, stream=True)
+    if resp.status_code == 200:
+        return Response(resp.content, mimetype='image/gif')
+    else:
+        return "GIF not found", 404
 
 @app.route('/picture', methods=['GET', 'POST'])
 def picture():

@@ -21,4 +21,4 @@ def make_gif(image_folder, output_gif, duration=1000):
         print("No images found to make GIF.")
 
 # Example usage:
-make_gif("pictureGeneration/gifs/epochs/", "pictureGeneration/gifs/generated/animated.gif", duration=1000)
+make_gif("gifs/epochs/", "gifs/generated/animated.gif", duration=1000)
