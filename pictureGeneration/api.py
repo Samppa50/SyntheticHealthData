@@ -119,7 +119,7 @@ def reset_stop():
 
 @app.route('/gif/download', methods=['GET'])
 def download_gif():
-    gif_path = 'pictureGeneration/gifs/generated/animated.gif'
+    gif_path = 'gifs/generated/animated.gif'
     if not os.path.exists(gif_path):
         return jsonify({'error': 'GIF not found'}), 404
 
