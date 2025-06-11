@@ -315,7 +315,7 @@ def picture_gif():
         gif_path = os.path.join(gifs_dir, 'latest.gif')
         with open(gif_path, 'wb') as f:
             for chunk in resp.iter_content(chunk_size=8192):
-                if chunk:
+               if chunk:
                     f.write(chunk)
         return send_file(gif_path, mimetype='image/gif')
     else:
