@@ -237,14 +237,7 @@ def generate(session_id, pic_amount, epoch_amount, generation_type):
 
         set_progress(epoch / num_epochs * 100)
 
-    set_progress(0)
 
-    # Save the generator model
-    #model_save_path = os.path.join("models", f"generator_{session_id}.pth")
-    #os.makedirs("models", exist_ok=True)
-    #torch.save(netG.state_dict(), model_save_path)
-
-    # Generate and save pic_amount images after training
     output_dir = os.path.join("download", str(session_id))
     os.makedirs(output_dir, exist_ok=True)
     netG.eval()
@@ -254,7 +247,11 @@ def generate(session_id, pic_amount, epoch_amount, generation_type):
             fake_img = netG(noise).detach().cpu()
             save_image(fake_img, os.path.join(output_dir, f"generated_{idx}.png"), normalize=True)
 
-    make_gif("gifs/epochs/", "gifs/generated/animated.gif", duration=1000)
+    if make_gif("gifs/epochs/", "gifs/generated/animated.gif", duration=1000):
+        print("GIF created successfully.")
+    else:
+        print("Failed to create GIF. No images found.")
+    set_progress(0)
     print("Generation completed successfully.")
 
     return 0

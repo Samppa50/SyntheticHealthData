@@ -13,12 +13,11 @@ def make_gif(image_folder, output_gif, duration=1000):
             output_gif,
             save_all=True,
             append_images=frames[1:],
-            duration=duration,  # milliseconds per frame (1000ms = 1s)
+            duration=duration, 
             loop=1
         )
         print(f"GIF saved to {output_gif}")
+        return True
     else:
         print("No images found to make GIF.")
-
-# Example usage:
-make_gif("gifs/epochs/", "gifs/generated/animated.gif", duration=1000)
+        return False
