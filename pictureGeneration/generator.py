@@ -247,6 +247,7 @@ def generate(session_id, pic_amount, epoch_amount, generation_type):
             fake_img = netG(noise).detach().cpu()
             save_image(fake_img, os.path.join(output_dir, f"generated_{idx}.png"), normalize=True)
 
+    os.makedirs("gifs/generated/", exist_ok=True)
     if make_gif("gifs/epochs/", "gifs/generated/animated.gif", duration=1000):
         print("GIF created successfully.")
     else:

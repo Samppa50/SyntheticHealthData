@@ -91,6 +91,7 @@ def delete_user_data():
     global current_id
     current_id = 404
     shutil.rmtree(UPLOAD_FOLDER, ignore_errors=True)
+    shutil.rmtree('gifs', ignore_errors=True)
     print("User data deleted successfully.")
     return jsonify({'message': 'User data deleted successfully.'})
 
