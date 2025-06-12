@@ -36,7 +36,8 @@ def cleanup_old_sessions():
             'Files/downloads',
             'Files/pictures/uploads',
             'static/images',
-            './flask_session'
+            './flask_session',
+            'static/gifs'
         ]
         for base_dir in session_dirs:
             if not os.path.exists(base_dir):

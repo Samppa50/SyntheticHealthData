@@ -14,7 +14,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 current_id = 404
 user_prosessing = False
 
-# Ensure the folder exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def allowed_file(filename):
@@ -91,6 +90,7 @@ def delete_user_data():
     global current_id
     current_id = 404
     shutil.rmtree(UPLOAD_FOLDER, ignore_errors=True)
+    shutil.rmtree('gifs', ignore_errors=True)
     print("User data deleted successfully.")
     return jsonify({'message': 'User data deleted successfully.'})
 
