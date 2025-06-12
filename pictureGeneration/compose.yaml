@@ -12,18 +12,6 @@ services:
           devices:
             - capabilities: [gpu]
 
-#  picture-generation:
-#    build: ../pictureGeneration
-#    ports:
-#      - "5002:5002"
-#    networks:
-#      - my_network
-#    deploy:
-#      resources:
-#        reservations:
-#          devices:
-#            - capabilities: [gpu]
-
 networks:
   my_network:
     driver: bridge
