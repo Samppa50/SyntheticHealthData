@@ -14,7 +14,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 current_id = 404
 user_prosessing = False
 
-# Ensure the folder exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def allowed_file(filename):
