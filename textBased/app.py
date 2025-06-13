@@ -288,6 +288,10 @@ def picture_delete():
         upload_folder = f'Files/pictures/uploads/{session_id}'
         if os.path.exists(upload_folder):
             shutil.rmtree(upload_folder, ignore_errors=True)
+        gif_path = os.path.join('static', 'gifs', 'latest.gif')
+        if os.path.exists(gif_path):
+            os.remove(gif_path)
+            print("GIF deleted successfully.")
         url = f"http://picture-generation:5002/user/data/delete"
         response = requests.delete(url)
         session.clear()

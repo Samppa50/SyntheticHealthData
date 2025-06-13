@@ -87,7 +87,9 @@ def delete_user_data():
     global current_id
     current_id = 404
     shutil.rmtree(UPLOAD_FOLDER, ignore_errors=True)
-    shutil.rmtree('gifs', ignore_errors=True)
+    gif_path = os.path.join('gifs', 'generated', 'animated.gif')
+    if os.path.exists(gif_path):
+        os.remove(gif_path)
     print("User data deleted successfully.")
     return jsonify({'message': 'User data deleted successfully.'})
 
