@@ -40,13 +40,10 @@ def upload_image():
     upload_folder_path = os.path.join(UPLOAD_FOLDER, session_id)
     os.makedirs(upload_folder_path, exist_ok=True)
 
-    if 'images' not in request.files:
-        return jsonify({'error': 'No image files provided'}), 400
-
     files = request.files.getlist('images')
     print([file.filename for file in files])
     if not files or all(f.filename == '' for f in files):
-        return jsonify({'error': 'No selected files'}), 400
+        print('No selected files')
 
     saved_files = []
     i = 1
@@ -61,8 +58,8 @@ def upload_image():
         else:
             print(f"Skipping invalid file: {file.filename}")
 
-    if not saved_files:
-        return jsonify({'error': 'No valid image files provided'}), 400
+    #if not saved_files:
+    #    return jsonify({'error': 'No valid image files provided'}), 400
 
     generate(session_id, pic_amount, epoch_amount, generation_type)
     user_prosessing = False

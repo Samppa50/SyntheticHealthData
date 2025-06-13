@@ -25,14 +25,15 @@
             <form action="{{ url_for('picture_upload') }}" method="post" enctype="multipart/form-data" class="container">
                 <div class="container">
                     <h2>Wanted picture amount</h2>
-                    <input type="number" name="pic-amount" placeholder="Enter number of wanted pictures" required class="custom-input">
+                    <input type="number" name="pic-amount" placeholder="Enter number of wanted pictures" class="custom-input">
                 </div>
                 <div class="container">
                     <h2>Wanted epoch amount</h2>
-                    <input type="number" name="epoch-amount" placeholder="Enter number of wanted epochs" required class="custom-input">
+                    <input type="number" name="epoch-amount" placeholder="Enter number of wanted epochs" class="custom-input">
                 </div>
                 <div class="container">
                     <h2>Used generating type</h2>
+                    <p>While using pre-trained model epochs and uploaded pictures are not used.</p>
                     <select name="generation-type" required class="custom-input">
                         <option value="0">New model</option>
                         <option value="1">Hand model</option>

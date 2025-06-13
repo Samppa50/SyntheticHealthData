@@ -132,7 +132,6 @@ def submit():
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    # hide blocks here
     session['col_categories'] = []
 
     csv_filename = session['file_name']
@@ -194,7 +193,7 @@ def stop():
 @app.route('/picture/progress')
 def picture_progress():
     global file_amount
-    url = "http://192.168.1.111:5002/progress"
+    url = "http://picture-generation:5002/progress"
     progress = requests.get(url)
     json_progress = progress.json()
     print(f"Progress: {progress.json()}")
@@ -206,15 +205,16 @@ def picture_progress():
 
 @app.route('/picture/upload', methods=['POST'])
 def picture_upload():
-    url = "http://192.168.1.111:5002/upload"
-    reset_stop_url = "http://192.168.1.111:5002/reset/stop"
+    url = "http://picture-generation:5002/upload"
+    reset_stop_url = "http://picture-generation:5002/reset/stop"
     session_id = session.get('session_id', str(uuid.uuid4()))
     session['session_id'] = session_id
-    pic_amount = request.form.get("pic-amount", default=10, type=int)
-    epoch_amount = request.form.get("epoch-amount", default=10, type=int)
+    pic_amount = request.form.get("pic-amount", default=1, type=int)
+    epoch_amount = request.form.get("epoch-amount", default=1, type=int)
     generation_type = request.form.get("generation-type", default=0, type=int)
 
     print(f'Using generation type: {generation_type}')
+
 
     response = requests.post(reset_stop_url, json={'session_id': session_id})
 
@@ -222,7 +222,6 @@ def picture_upload():
     if not os.path.exists(upload_folder):
         os.makedirs(upload_folder)
 
-    # Get all files from the request
     files = request.files.getlist('files')
     if not files or files == [None]:
         return "No files selected", 400
@@ -230,6 +229,10 @@ def picture_upload():
     global file_amount
     file_amount = len(files)
     print(f"Number of files received: {file_amount}")
+
+    print(f'file amount: {file_amount}')
+    if generation_type == 0 and file_amount < 2:
+        return "No files or 1 file selected for generation, please provide more pictures", 400
 
     results = []
     api_files = []
@@ -247,12 +250,12 @@ def picture_upload():
         'session_id': session_id,
         'generation-type': generation_type
     }
+
     response = requests.post(url, files=api_files, data=api_data)
 
     if response.status_code == 403:
         return "Forbidden: Server is busy at the moment.", 403
 
-    #folder_name = session.get('session_id', str(uuid.uuid4()))
     return redirect(url_for('picture_ready'))
 
 
@@ -263,7 +266,7 @@ def picture_download():
         return "No session ID found", 400
     print(folder_name)
     # Call the picture-generation API to get the zip
-    url = f"http://192.168.1.111:5002/download/{folder_name}"
+    url = f"http://picture-generation:5002/download/{folder_name}"
     response = requests.get(url, stream=True)
     if response.status_code != 200:
         return f"Error downloading zip: {response.text}", response.status_code
@@ -285,9 +288,7 @@ def picture_delete():
         upload_folder = f'Files/pictures/uploads/{session_id}'
         if os.path.exists(upload_folder):
             shutil.rmtree(upload_folder, ignore_errors=True)
-
-        # data still needs to be deleted from the picture-generation API
-        url = f"http://192.168.1.111:5002/user/data/delete"
+        url = f"http://picture-generation:5002/user/data/delete"
         response = requests.delete(url)
         session.clear()
     return redirect("/")
@@ -295,8 +296,7 @@ def picture_delete():
 @app.route('/picture/stop', methods=['POST'])
 def picture_stop():
     session_id = session.get('session_id', '')
-    # Call the picture-generation API to stop the generation
-    url = f"http://192.168.1.111:5002/stop"
+    url = f"http://picture-generation:5002/stop"
     response = requests.post(url, json={'session_id': session_id})
     if response.status_code == 200:
         print("Generation stopped successfully.")
@@ -306,7 +306,7 @@ def picture_stop():
 
 @app.route('/picture/gif')
 def picture_gif():
-    gif_url = "http://192.168.1.111:5002/gif/download"
+    gif_url = "http://picture-generation:5002/gif/download"
     resp = requests.get(gif_url, stream=True)
     print("GIF status code:", resp.status_code)
     print("Saving to:", os.path.abspath('static/gifs/latest.gif'))

@@ -62,6 +62,10 @@ def generate(session_id, pic_amount, epoch_amount, generation_type):
     # Generation type 1 = continue training existing hand model
     # new generation types can be added later
 
+    if generation_type != 0:
+        epoch_amount = 0
+        print(f'Changed epoch amount to {epoch_amount} for generation type {generation_type}')
+
 
     print(torch.cuda.is_available())
 
@@ -185,58 +189,61 @@ def generate(session_id, pic_amount, epoch_amount, generation_type):
         transforms.ToTensor(),
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
     ])
-    data_location = 'uploads/' + session_id + "/"
-    dataset = CustomImageDataset(image_dir=data_location, transform=transform)
-    dataloader = DataLoader(dataset, batch_size=64, shuffle=True)
-
-    # Training
-    num_epochs = epoch_amount
-    for epoch in range(num_epochs):
-        if get_stop():
-            print("User stopped processing.")
+    data_location = os.path.join('uploads', session_id)
+    if generation_type == 0:
+        dataset = CustomImageDataset(image_dir=data_location, transform=transform)
+        if len(dataset) == 0:
+            print("No images found for training. Aborting.")
             set_progress(0)
             return -1
-        
-        for i, data in enumerate(dataloader):
-            real_data = data.to(device)
-            batch_size = real_data.size(0)
+        dataloader = DataLoader(dataset, batch_size=64, shuffle=True)
+        num_epochs = epoch_amount
+        for epoch in range(num_epochs):
+            if get_stop():
+                print("User stopped processing.")
+                set_progress(0)
+                return -1
+            for i, data in enumerate(dataloader):
+                real_data = data.to(device)
+                batch_size = real_data.size(0)
 
-            # Train Discriminator
-            for _ in range(n_critic):
-                netD.zero_grad()
+                # Train Discriminator
+                for _ in range(n_critic):
+                    netD.zero_grad()
+                    noise = torch.randn(batch_size, nz, 1, 1, device=device)
+                    fake_data = netG(noise).detach()
+                    real_output = netD(real_data)
+                    fake_output = netD(fake_data)
+                    gp = compute_gradient_penalty(netD, real_data.data, fake_data.data)
+                    d_loss = discriminator_loss(real_output, fake_output) + lambda_gp * gp
+                    d_loss.backward()
+                    optimizerD.step()
+
+                # Train Generator
+                netG.zero_grad()
                 noise = torch.randn(batch_size, nz, 1, 1, device=device)
-                fake_data = netG(noise).detach()
-                real_output = netD(real_data)
+                fake_data = netG(noise)
                 fake_output = netD(fake_data)
-                gp = compute_gradient_penalty(netD, real_data.data, fake_data.data)
-                d_loss = discriminator_loss(real_output, fake_output) + lambda_gp * gp
-                d_loss.backward()
-                optimizerD.step()
+                g_loss = generator_loss(fake_output)
+                g_loss.backward()
+                optimizerG.step()
 
-            # Train Generator
-            netG.zero_grad()
-            noise = torch.randn(batch_size, nz, 1, 1, device=device)
-            fake_data = netG(noise)
-            fake_output = netD(fake_data)
-            g_loss = generator_loss(fake_output)
-            g_loss.backward()
-            optimizerG.step()
+                if i % 50 == 0:
+                    print(f"[{epoch}/{num_epochs}][{i}/{len(dataloader)}] "
+                        f"D Loss: {d_loss.item():.4f} G Loss: {g_loss.item():.4f} "
+                        f"D(real): {real_output.mean().item():.4f} D(fake): {fake_output.mean().item():.4f}")
 
-            if i % 50 == 0:
-                print(f"[{epoch}/{num_epochs}][{i}/{len(dataloader)}] "
-                    f"D Loss: {d_loss.item():.4f} G Loss: {g_loss.item():.4f} "
-                    f"D(real): {real_output.mean().item():.4f} D(fake): {fake_output.mean().item():.4f}")
+            # Save samples
+            if epoch % 100 == 0:
+                with torch.no_grad():
+                    fake_images = netG(torch.randn(64, nz, 1, 1, device=device)).detach().cpu()
+                    output_dir_epoch = os.path.join("gifs/epochs/")
+                    os.makedirs(output_dir_epoch, exist_ok=True)
+                    save_image(fake_images, os.path.join(output_dir_epoch, f"generated_epoch_{epoch+1}.png"), normalize=True)
 
-        # Save samples
-        if epoch % 100 == 0:
-            with torch.no_grad():
-                fake_images = netG(torch.randn(64, nz, 1, 1, device=device)).detach().cpu()
-                output_dir_epoch = os.path.join("gifs/epochs/")
-                os.makedirs(output_dir_epoch, exist_ok=True)
-                save_image(fake_images, os.path.join(output_dir_epoch, f"generated_epoch_{epoch+1}.png"), normalize=True)
-
-        set_progress(epoch / num_epochs * 100)
-
+            set_progress(epoch / num_epochs * 100)
+    else:
+        print("Skipping training, using pretrained model to generate images.")
 
     output_dir = os.path.join("download", str(session_id))
     os.makedirs(output_dir, exist_ok=True)
