@@ -216,6 +216,7 @@ def picture_upload():
 
     print(f'Using generation type: {generation_type}')
 
+
     response = requests.post(reset_stop_url, json={'session_id': session_id})
 
     upload_folder = f'Files/pictures/uploads/{session_id}'
@@ -230,6 +231,10 @@ def picture_upload():
     global file_amount
     file_amount = len(files)
     print(f"Number of files received: {file_amount}")
+
+    print(f'file amount: {file_amount}')
+    if generation_type == 0 and file_amount < 1:
+        return "No files selected for generation", 400
 
     results = []
     api_files = []
@@ -247,6 +252,7 @@ def picture_upload():
         'session_id': session_id,
         'generation-type': generation_type
     }
+
     response = requests.post(url, files=api_files, data=api_data)
 
     if response.status_code == 403:
