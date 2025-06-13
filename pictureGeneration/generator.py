@@ -62,6 +62,10 @@ def generate(session_id, pic_amount, epoch_amount, generation_type):
     # Generation type 1 = continue training existing hand model
     # new generation types can be added later
 
+    if generation_type != 0:
+        epoch_amount = 0
+        print(f'Changed epoch amount to {epoch_amount} for generation type {generation_type}')
+
 
     print(torch.cuda.is_available())
 
@@ -185,19 +189,20 @@ def generate(session_id, pic_amount, epoch_amount, generation_type):
         transforms.ToTensor(),
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
     ])
-    data_location = 'uploads/' + session_id + "/"
-    dataset = CustomImageDataset(image_dir=data_location, transform=transform)
-    dataloader = DataLoader(dataset, batch_size=64, shuffle=True)
-
-    # Training
-    num_epochs = epoch_amount
+    data_location = os.path.join('uploads', session_id)
     if generation_type == 0:
+        dataset = CustomImageDataset(image_dir=data_location, transform=transform)
+        if len(dataset) == 0:
+            print("No images found for training. Aborting.")
+            set_progress(0)
+            return -1
+        dataloader = DataLoader(dataset, batch_size=64, shuffle=True)
+        num_epochs = epoch_amount
         for epoch in range(num_epochs):
             if get_stop():
                 print("User stopped processing.")
                 set_progress(0)
                 return -1
-
             for i, data in enumerate(dataloader):
                 real_data = data.to(device)
                 batch_size = real_data.size(0)
@@ -237,7 +242,8 @@ def generate(session_id, pic_amount, epoch_amount, generation_type):
                     save_image(fake_images, os.path.join(output_dir_epoch, f"generated_epoch_{epoch+1}.png"), normalize=True)
 
             set_progress(epoch / num_epochs * 100)
-
+    else:
+        print("Skipping training, using pretrained model to generate images.")
 
     output_dir = os.path.join("download", str(session_id))
     os.makedirs(output_dir, exist_ok=True)
