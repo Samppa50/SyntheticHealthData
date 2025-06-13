@@ -335,6 +335,8 @@ def picture():
 @app.route('/picture/ready', methods=['GET', 'POST'])
 def picture_ready():
     picture_gif()
-    return render_template("pictureReady.html")
+    gif_path = os.path.join('static', 'gifs', 'latest.gif')
+    gif_exists = os.path.exists(gif_path)
+    return render_template("pictureReady.html", gif_exists=gif_exists)
 
 app.run(debug=True, port=5001, host='0.0.0.0')

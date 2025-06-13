@@ -9,8 +9,10 @@
 <body>
     <div class="container">
         <H1 style="padding-top: 50px">Your pictures have been prosessed</H1>
+       {% if gif_exists %}
         <h2>Process gif</h2>
         <img src="{{ url_for('static', filename='gifs/latest.gif') }}" alt="Generated GIF" style="max-width:30%; max-height: 30%;"/>
+        {% endif %}
         <div class="container-row">
             <div style="padding: 20px;">
                 <form action="{{ url_for('picture_download') }}" method="get">
