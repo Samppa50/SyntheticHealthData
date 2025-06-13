@@ -61,8 +61,8 @@ def upload_image():
         else:
             print(f"Skipping invalid file: {file.filename}")
 
-    if not saved_files:
-        return jsonify({'error': 'No valid image files provided'}), 400
+    #if not saved_files:
+    #    return jsonify({'error': 'No valid image files provided'}), 400
 
     generate(session_id, pic_amount, epoch_amount, generation_type)
     user_prosessing = False

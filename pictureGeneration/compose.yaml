@@ -6,11 +6,11 @@ services:
       - 5002:5002
     networks:
       - my_network
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - capabilities: [gpu]
+#    deploy:
+#      resources:
+#        reservations:
+#          devices:
+#            - capabilities: [gpu]
 
 networks:
   my_network:
