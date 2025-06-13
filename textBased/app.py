@@ -132,7 +132,6 @@ def submit():
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    # hide blocks here
     session['col_categories'] = []
 
     csv_filename = session['file_name']
@@ -223,7 +222,6 @@ def picture_upload():
     if not os.path.exists(upload_folder):
         os.makedirs(upload_folder)
 
-    # Get all files from the request
     files = request.files.getlist('files')
     if not files or files == [None]:
         return "No files selected", 400
@@ -290,8 +288,6 @@ def picture_delete():
         upload_folder = f'Files/pictures/uploads/{session_id}'
         if os.path.exists(upload_folder):
             shutil.rmtree(upload_folder, ignore_errors=True)
-
-        # data still needs to be deleted from the picture-generation API
         url = f"http://192.168.1.111:5002/user/data/delete"
         response = requests.delete(url)
         session.clear()
@@ -300,7 +296,6 @@ def picture_delete():
 @app.route('/picture/stop', methods=['POST'])
 def picture_stop():
     session_id = session.get('session_id', '')
-    # Call the picture-generation API to stop the generation
     url = f"http://192.168.1.111:5002/stop"
     response = requests.post(url, json={'session_id': session_id})
     if response.status_code == 200:
