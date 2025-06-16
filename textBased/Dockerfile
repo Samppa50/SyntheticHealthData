@@ -24,4 +24,5 @@ COPY . .
 EXPOSE 5001
 
 # Run the application.
-CMD python3 app.py
+#CMD python3 app.py
+CMD gunicorn -c gunicorn_config.py app:app

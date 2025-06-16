@@ -7,3 +7,4 @@ openpyxl
 seaborn
 matplotlib
 flask-session
+gunicorn

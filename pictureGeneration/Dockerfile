@@ -16,4 +16,4 @@ COPY . .
 
 EXPOSE 5002
 
-CMD python api.py
+CMD gunicorn -c gunicorn_conf.py api:app
