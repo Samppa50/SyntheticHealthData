@@ -1,8 +1,8 @@
 
 # Synthetic health data
 
-Synthesizing .csv/.xlsx data for usecases in which original data can't be used.
-Generating synthetic pictures will also be soon supported.
+Synthesizing .csv/.xlsx or picture data for usecases in which original data can't be used.
+
 
 Connecting requires TAMK source network access. 
 http://172.16.5.51:5001/
