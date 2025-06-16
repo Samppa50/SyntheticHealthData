@@ -41,12 +41,15 @@ File download and remove
 ## Picture generation example
 
 Choosing parameters picture amount, epoch amount, should pre-trained model be used and what pictures to use.
+
 <img width="1200" alt="Image" src="https://github.com/user-attachments/assets/8bca7608-39dc-43af-98d9-8822e386fe70" />
 
 Generation takes a while but it can be stopped.
+
 <img width="1200" alt="Image" src="https://github.com/user-attachments/assets/52b4c571-7c2b-4159-87ec-e80935469bb3" />
 
 After your picure has been processed you will see a gif about processing your images, options to restart download and to delete your data from the sever.
+
 <img width="1200" alt="Image" src="https://github.com/user-attachments/assets/d29c0bc5-a20f-406b-a1fc-3c2cb511d884" />
 
 ## Authors
