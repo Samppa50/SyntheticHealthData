@@ -1,7 +1,7 @@
 services:
-  picture-generation:
-    build:
-      context: .
+#  picture-generation:
+  build:
+    context: .
     # networks:
     #   - my_network
     # deploy:
