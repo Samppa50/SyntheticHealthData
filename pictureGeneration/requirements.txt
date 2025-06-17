@@ -4,3 +4,4 @@ torchvision
 torchaudio
 matplotlib
 Flask
+gunicorn
