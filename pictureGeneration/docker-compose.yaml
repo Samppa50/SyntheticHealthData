@@ -1,15 +1,10 @@
+version: "3.8"
 services:
-#  picture-generation:
-  build:
-    context: .
-    # networks:
-    #   - my_network
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - capabilities: [gpu]
-
-# networks:
-#   my_network:
-#     driver: bridge
+  picture-generation:
+    build:
+      context: .
+    # Uncomment and edit below if you want to expose ports or add volumes
+    # ports:
+    #   - "5002:5002"
+    # volumes:
+    #   - ./somefolder:/app/somefolder
