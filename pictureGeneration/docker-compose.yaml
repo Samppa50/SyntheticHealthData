@@ -4,14 +4,14 @@ services:
       context: .
     ports:
       - 5002:5002
-    networks:
-      - my_network
+#    networks:
+#      - my_network
 #    deploy:
 #      resources:
 #        reservations:
 #          devices:
 #            - capabilities: [gpu]
 
-networks:
-  my_network:
-    driver: bridge
+#networks:
+#  my_network:
+#    driver: bridge
