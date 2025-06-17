@@ -1,9 +1,9 @@
 services:
-  picture-generation:
-    build:
-      context: .
-    ports:
-      - 5002:5002
+#  picture-generation:
+  build:
+    context: .
+  ports:
+    - 5002:5002
 #    networks:
 #      - my_network
 #    deploy:
