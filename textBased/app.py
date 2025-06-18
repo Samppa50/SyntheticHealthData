@@ -339,4 +339,4 @@ def picture_ready():
     gif_exists = os.path.exists(gif_path)
     return render_template("pictureReady.html", gif_exists=gif_exists)
 
-#app.run(debug=True, port=5001, host='picture-generation')
+app.run(debug=True, port=5001, host='picture-generation')
