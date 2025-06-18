@@ -3,8 +3,14 @@ services:
   picture-generation:
     build:
       context: .
-    # Uncomment and edit below if you want to expose ports or add volumes
     ports:
       - "5002:5002"
-    # volumes:
-    #   - ./somefolder:/app/somefolder
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
