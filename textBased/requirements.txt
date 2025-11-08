@@ -8,3 +8,4 @@ seaborn
 matplotlib
 flask-session
 gunicorn
+spacey

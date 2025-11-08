@@ -10,7 +10,8 @@ import threading
 import time
 import requests
 import io
-
+import pandas as pd
+from presidio_analyzer import AnalyzerEngine
 app = Flask(__name__)
 
 file_amount = 0
@@ -78,19 +79,39 @@ def upload_file():
     if request.method == "POST":
         file = request.files['file']
         if file:
-            session_id = session.get('session_id', str(uuid.uuid4()))  # Generate a unique session ID
+            session_id = session.get('session_id', str(uuid.uuid4()))
             session['session_id'] = session_id
 
             upload_folder = f'Files/uploads/{session_id}'
-            if not os.path.exists(upload_folder):
-                os.makedirs(upload_folder)
+            os.makedirs(upload_folder, exist_ok=True)
 
             file_path = os.path.join(upload_folder, secure_filename(file.filename))
             file.save(file_path)
 
             sanitized_filename = secure_filename(file.filename.replace(" ", "_"))
             session['file_name'] = sanitized_filename
-            session['col_categories'] = main(session_id, sanitized_filename)
+
+            # Load CSV and check for PII
+            df = pd.read_csv(file_path)
+            pii_columns = []
+
+            analyzer = AnalyzerEngine()
+
+            for col in df.columns:
+                sample_text = str(df[col].dropna().astype(str).head(10).tolist())
+                results = analyzer.analyze(text=sample_text, entities=[], language='en')
+                if results:
+                    pii_columns.append(col)
+
+            session['pii_categories'] = pii_columns
+            # Drop PII columns
+            #df_sanitized = df.drop(columns=pii_columns)
+            sanitized_path = os.path.join(upload_folder, f"sanitized_{sanitized_filename}")
+            df.to_csv(sanitized_path, index=False)
+
+            # Update session with sanitized file
+            session['file_name'] = f"sanitized_{sanitized_filename}"
+            session['col_categories'] = main(session_id, f"sanitized_{sanitized_filename}")
 
             return redirect("/")
         else:

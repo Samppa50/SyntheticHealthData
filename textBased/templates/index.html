@@ -39,7 +39,12 @@
                             <ul class="exclude-ul">
                                 <p class="options-text">exclude column</p>
                                 <input type="hidden" name="exclude_columns" value=0>
-                                <input class="options-checkbox exclude-checkbox" type="checkbox" name="exclude_columns" value=1 id="exclude-column-{{ loop.index }}">
+                                <input class="options-checkbox exclude-checkbox"
+                                    type="checkbox"
+                                    name="exclude_columns"
+                                    value=1
+                                    id="exclude-column-{{ loop.index }}"
+                                    {% if item in pii_categories %}checked{% endif %}>
                                 <label for="exclude-column-{{ loop.index }}"></label>
                             </ul>
                             <ul class="bool-ul">
