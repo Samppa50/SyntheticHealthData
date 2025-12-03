@@ -32,6 +32,12 @@
             {% if items %}
             <form action="/submit" method="post">
                 <div class="category">
+                    <div class="bool-ul">
+                        <p class="options-text">Redact PII data</p>
+                        <input type="hidden" name="redact_data" value=0>
+                        <input class="options-checkbox bool-checkbox" type="checkbox" name="redact_data" value=1 id="redact_data">
+                        <label for="redact_data"></label>
+                    </div>
                     {% for item in items %}
                     <div class="category-block">
                         <h2>{{ item }}</h2>
